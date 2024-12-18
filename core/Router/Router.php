@@ -157,8 +157,30 @@ class Router {
      * @return string The route's URL.
      */
     public static function route(string $name): string {
-        /** @var Route $route */
-        $route = self::$routes[self::$routeAliases[$name]] ?? self::$routes[$name];
-        return $route?->path ?? $name;
+        if (isset(self::$routeAliases[$name])) {
+            $aliases = self::$routeAliases[$name];
+            if (!is_array($aliases)) {
+                if (isset(self::$routes[$aliases])) {
+                    /** @var Route $route */
+                    $route = self::$routes[$aliases];
+                    return $route->path;
+                }
+            } else {
+                foreach ($aliases as $alias) {
+                    if (isset(self::$routes[$alias])) {
+                        /** @var Route $route */
+                        $route = self::$routeAliases[$alias];
+                        return $route->path;
+                    }
+                }
+            }
+            return $name;
+        }
+        if (isset(self::$routes[$name])) {
+            /** @var Route $route */
+            $route = self::$routes[$name];
+            return $route->path;
+        }
+        return $name;
     }
 }

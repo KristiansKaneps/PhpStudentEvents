@@ -6,17 +6,17 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title><?= htmlspecialchars(isset($title) ? $title : config('APP.NAME')) ?></title>
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/assets/css/main.css">
 </head>
 <body>
 <!-- Header -->
 <header>
-    <img src="logo.png" alt="University Logo">
+    <img src="/assets/images/logo.png" alt="<?= config('APP.NAME') ?> Logo">
     <nav>
         <a href="<?= route('home') ?>">Home</a>
-        <a href="<?= route('event.list') ?>">Events</a>
-        <a href="#">About</a>
-        <a href="#">Contact</a>
+        <a href="<?= route('events') ?>">Events</a>
+        <a href="<?= route('about') ?>">About</a>
+        <a href="<?= route('contact') ?>">Contact</a>
     </nav>
 </header>
 
@@ -26,9 +26,8 @@
 
 <!-- Footer -->
 <footer>
-    <p>&copy; <?= date('Y') ?> <?= htmlspecialchars(config('APP.NAME')) ?>. All rights reserved.</p>
-    <a href="#">Privacy Policy</a>
-    <a href="#">Contact Us</a>
+    <p>&copy; <?= date('Y') ?> <?= htmlspecialchars(config('APP.NAME')) ?>.</p>
+    <a href="<?= route('contact') ?>">Contact Us</a>
 </footer>
 </body>
 </html>

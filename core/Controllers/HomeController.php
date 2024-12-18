@@ -5,14 +5,19 @@ namespace Controllers;
 use Services\EventService;
 
 class HomeController extends Controller {
-    private EventService $eventService;
-
-    public function __construct() {
-        parent::__construct();
-        $this->eventService = resolve(EventService::class);
+    public function index(EventService $eventService): void {
+        $this->render('pages/index', ['events' => $eventService->getTrendingEvents()]);
     }
 
-    public function index(): void {
-        $this->render('pages/index', ['events' => $this->eventService->getEvents()]);
+    public function eventList(EventService $eventService): void {
+        $this->render('pages/events', ['events' => $eventService->listUpcomingEvents()]);
+    }
+
+    public function contact(): void {
+        $this->render('pages/contact');
+    }
+
+    public function about(): void {
+        $this->render('pages/about');
     }
 }

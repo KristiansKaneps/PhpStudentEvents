@@ -5,9 +5,6 @@ namespace Database\Connection;
 use PDO;
 use PDOException;
 
-require_once(__DIR__ . '/../../../config/config.php');
-require_once(__DIR__ . '/DatabaseException.php');
-
 class Connection {
     private static ?Connection $instance = null;
 

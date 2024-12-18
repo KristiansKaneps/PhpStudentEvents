@@ -2,7 +2,7 @@
 <section class="hero">
     <h1>Discover Student Events</h1>
     <p>Engage, participate, and grow with opportunities at our university!</p>
-    <a href="#">Explore Events</a>
+    <a href="<?= route('events') ?>">Explore Events</a>
 </section>
 
 <!-- Events Section -->
