@@ -1,0 +1,51 @@
+<?php
+
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'autoload.php';
+
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
+
+require_once CORE_DIR . 'DI' . DIRECTORY_SEPARATOR . 'dependency_injection.php';
+
+require_once('config/config.php');
+require_once('commands/ConsoleCommand.php');
+
+$commands = array();
+
+$files = scandir('commands', SCANDIR_SORT_ASCENDING);
+foreach ($files as $file) {
+    if (is_dir($file) || stripos($file, 'ConsoleCommand') === 0) continue;
+
+    include_once('commands/' . $file);
+
+    $class = 'Commands\\' . explode('.', $file)[0];
+    /** @var Commands\ConsoleCommand $instance */
+    $instance = new $class();
+    $commands[$instance->getName()] = $instance;
+}
+
+if (count($argv) < 2) {
+    echo "Available commands:" . PHP_EOL;
+    foreach ($commands as $commandName => $instance) {
+        echo " •  " . $commandName . "  - " . $instance->getDescription() . PHP_EOL;
+    }
+    echo "Usage: php console <command> [arguments...]" . PHP_EOL;
+    return;
+}
+
+$commandName = strtolower($argv[1]);
+
+if (!array_key_exists($commandName, $commands)) {
+    echo "Could not find command '" . $commandName . "'" . PHP_EOL;
+    return;
+}
+
+$args = array_slice($argv, 2);
+
+$instance = $commands[$commandName];
+
+try {
+    $instance->run($args);
+} catch (\Exception $e) {
+    $commandLine = count($args) > 0 ? $commandName . ' ' . implode(' ', $args) : $commandName;
+    echo "Command '" . $commandLine . "' failed with exception: " . $e->getMessage() . PHP_EOL;
+}

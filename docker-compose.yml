@@ -1,0 +1,62 @@
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    volumes:
+      - .:/app
+      - .:/usr/local/apache2/htdocs/app
+      - ./docker/php/.bashrc:/home/phpuser/.bashrc
+    working_dir: /app
+
+  apache:
+    build:
+      context: .
+      dockerfile: docker/apache/Dockerfile
+    depends_on:
+      - app
+      - db
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - .:/usr/local/apache2/htdocs/app
+      - ./docker/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
+    networks:
+      default:
+        aliases:
+          - student-events.local
+
+  db:
+    image: mariadb:11.5.2
+    environment:
+      MYSQL_DATABASE: student_events_db
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - .:/app
+      - dbdata:/var/lib/mysql
+    ports:
+      - 3306:3306
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.1-apache
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      PMA_HOST: db
+      UPLOAD_LIMIT: 600M
+    volumes:
+      - ./docker/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
+    ports:
+      - 81:80
+
+  mailcatcher:
+    image: schickling/mailcatcher
+    ports:
+      - 82:1080 # web UI
+
+volumes:
+  dbdata:
+
+networks:
+  default:

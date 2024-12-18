@@ -1,0 +1,14 @@
+/.idea
+error_log
+error.log
+.DS_Store
+.env
+**/*.cache
+/.lock
+/.phar
+/dumps/
+
+**/node_modules
+**/npm-debug.log
+**/.env
+**/.aws

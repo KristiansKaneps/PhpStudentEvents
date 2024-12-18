@@ -1,0 +1,132 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', 'Open Sans', Arial, sans-serif;
+    color: #333333;
+    background-color: #FFFFFF;
+    line-height: 1.6;
+}
+
+/* Header */
+header {
+    background-color: #015551;
+    color: #FFFFFF;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header img {
+    max-height: 50px;
+}
+
+nav a {
+    color: #FFFFFF;
+    margin-left: 2rem;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+nav a:hover {
+    color: #D4AF37;
+}
+
+/* Hero Section */
+.hero {
+    background-color: #015551;
+    color: #FFFFFF;
+    padding: 3rem 1rem;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.hero p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.hero a {
+    display: inline-block;
+    background-color: #D4AF37;
+    color: #015551;
+    padding: 0.8rem 2rem;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.hero a:hover {
+    background-color: #F2C94C;
+    color: #015551;
+}
+
+/* Cards */
+.section-title {
+    text-align: center;
+    color: #015551;
+    font-size: 2rem;
+    margin: 2rem 0;
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 0 1rem;
+}
+
+.card {
+    background-color: #F6F6F6;
+    border: 1px solid #E5E5E5;
+    border-radius: 8px;
+    width: 300px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-align: center;
+}
+
+.card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.card h3 {
+    color: #015551;
+    margin: 1rem 0;
+    font-size: 1.2rem;
+}
+
+.card p {
+    font-size: 0.9rem;
+    padding: 0 1rem 1.5rem;
+    color: #555555;
+}
+
+/* Footer */
+footer {
+    background-color: #015551;
+    color: #FFFFFF;
+    padding: 1.5rem 1rem;
+    text-align: center;
+}
+
+footer a {
+    color: #D4AF37;
+    text-decoration: none;
+    margin: 0 1rem;
+}
+
+footer a:hover {
+    color: #FFFFFF;
+}
