@@ -23,6 +23,10 @@ header {
 
 header img {
     max-height: 50px;
+    padding: 4px;
+    border-radius: 50%;
+    background: #efefef;
+    box-shadow: #333333 0 0 8px;
 }
 
 nav a {
