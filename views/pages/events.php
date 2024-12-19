@@ -9,6 +9,7 @@
     <h2 class="section-title">Upcoming Events</h2>
     <h1>Trending Events</h1>
     <ul>
+        <?php /** @var array $events */ ?>
         <?php foreach ($events as $event): ?>
             <li>
                 <h3><?php echo htmlspecialchars($event['name']); ?></h3>
