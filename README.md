@@ -2,7 +2,7 @@
 
 ![Logo](public/assets/images/logo-128x128.png)
 
-### **Piezīme:** Projekts vēl ir izstrādes stadijā.
+> **Piezīme:** Projekts vēl ir izstrādes stadijā.
 
 ## Projekta apraksts
 
@@ -60,7 +60,7 @@ Nepieciešams pārkopēt `.env.example` uz `.env`:
 cp .env.example .env
 ```
 
-**Piezīme:** Noklusējumā konfigurācija jau ir saderīga ar virtualizēto Docker vidi.
+> **Piezīme:** Noklusējumā konfigurācija jau ir saderīga ar virtualizēto Docker vidi.
 
 `.env` piemērs:
 
@@ -88,10 +88,10 @@ php console migrate
 Pēc visu darbību veikšanas atveriet tīmekļa pārlūkprogrammu un apmeklējiet:
 
 - **http://student-events.local**  
-  (Sistēma automātiski pāradresēs uz **https://student-events.local**).
+  (sistēma automātiski pāradresēs uz **https://student-events.local**).
 
-**Svarīgi:** Pašparakstītais SSL sertifikāts tiks ģenerēts automātiski, taču pārlūkprogramma var brīdināt, ka tas nav
-drošs.
+> **Svarīgi:** Pašparakstītais SSL sertifikāts tiks ģenerēts automātiski, taču pārlūkprogramma var brīdināt, ka tas nav
+> drošs.
 
 ---
 
@@ -194,9 +194,9 @@ Detalizētāk:
   </section>
   ...
   ```
-  **Piezīmes:**
-    - `EventService` tiek automātiski inicializēts un "injicēts" metodē `eventList`;
-    - `'pages/events'` nozīmē to pašu, ko [`/views/pages/events.php`](views/pages/events.php).
+  > **Piezīmes:**
+  >   - `EventService` tiek automātiski inicializēts un "injicēts" metodē `eventList`;
+  >   - `'pages/events'` nozīmē to pašu, ko [`/views/pages/events.php`](views/pages/events.php).
 - [`Database/`](core/Database): datubāzes loģika (savienošanās, vaicājumi u.c.):
     - savienošanās tiek veikta ar PHP PDO, un tiek mainīts savienojuma iestatījums, lai būtu vieglāk izgūt vaicājumu
       rezultātus:
