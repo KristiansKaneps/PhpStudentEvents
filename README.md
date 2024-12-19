@@ -28,14 +28,14 @@ MVC (Model-View-Controller) arhitektūru, kas nodrošina koda modularitāti un v
    ```
    127.0.0.1 student-events.local
    ```
-   - Windows sistēmā `hosts` fails atrodas:
-     ```
-     %WinDir%\System32\drivers\etc\hosts
-     ```
-   - Linux sistēmā `hosts` fails atrodas:
-     ```
-     /etc/hosts
-     ```
+    - Windows sistēmā `hosts` fails atrodas:
+      ```
+      %WinDir%\System32\drivers\etc\hosts
+      ```
+    - Linux sistēmā `hosts` fails atrodas:
+      ```
+      /etc/hosts
+      ```
 
 ### 1. Repozitorija klonēšana
 
@@ -131,6 +131,7 @@ SQL skriptiem ir pieļauta kļūda). Ja ir vēlme izdzēst visas datubāzes tabu
 komandai var pievienot argumentu: `php console migrate fresh`.
 
 Direktorijā [`views/`](views) atrodas visas sistēmas skatu veidnes. Piemēram:
+
 - [`pages/index.php`](views/pages/index.php): sākumlapas skata veidne;
 - [`pages/events.php`](views/pages/events.php): pasākumu lapas skata veidne;
 - [`pages/contact.php`](views/pages/contact.php): kontaktu lapas skata veidne;
@@ -138,10 +139,12 @@ Direktorijā [`views/`](views) atrodas visas sistēmas skatu veidnes. Piemēram:
 
 Sistēmas skati var tikt iekļauti izkārtojumos (_layouts_), kuri arī atrodas skatu veidņu direktorijā [`views/`](views).
 Piemēram:
+
 - [`layouts/main.php`](views/layouts/main.php): galvenais sistēmas skatu izkārtojums.
 - u.c.
 
 Direktorijā [`core/`](core) atrodas visa sistēmas loģika:
+
 ```plaintext
 .
 ├── ...
@@ -158,9 +161,11 @@ Direktorijā [`core/`](core) atrodas visa sistēmas loģika:
 │   └── ...
 └── ...
 ```
+
 Detalizētāk:
+
 - [`Controllers/`](core/Controllers): kontrolieri, kas koordinē sistēmas loģiku un veido skatus ar šādu kontroliera
-sintaksi (piemērs):
+  sintaksi (piemērs):
   ```php
   class HomeController extends Controller {
       ...
@@ -190,17 +195,17 @@ sintaksi (piemērs):
   ...
   ```
   **Piezīmes:**
-  - `EventService` tiek automātiski inicializēts un "injicēts" metodē `eventList`;
-  - `'pages/events'` nozīmē to pašu, ko [`/views/pages/events.php`](views/pages/events.php).
+    - `EventService` tiek automātiski inicializēts un "injicēts" metodē `eventList`;
+    - `'pages/events'` nozīmē to pašu, ko [`/views/pages/events.php`](views/pages/events.php).
 - [`Database/`](core/Database): datubāzes loģika (savienošanās, vaicājumi u.c.):
-  - savienošanās tiek veikta ar PHP PDO, un tiek mainīts savienojuma iestatījums, lai būtu vieglāk izgūt vaicājumu
-    rezultātus:
-    ```php
-    ...
-    $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    ...
-    ```
-  - datubāzes shēmu pārvalda migrācijas, kas atrodas direktorijā [`/database/migrations/`](database/migrations).
+    - savienošanās tiek veikta ar PHP PDO, un tiek mainīts savienojuma iestatījums, lai būtu vieglāk izgūt vaicājumu
+      rezultātus:
+      ```php
+      ...
+      $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+      ...
+      ```
+    - datubāzes shēmu pārvalda migrācijas, kas atrodas direktorijā [`/database/migrations/`](database/migrations).
 - [`Services/`](core/Services): servisi, kas atbild par sistēmas loģiku, piemēram:
   ```php
   class EventService extends Service {
@@ -227,7 +232,7 @@ sintaksi (piemērs):
   ```
   Šie "maršruti" ir definēti failā [`/routes/web.php`](routes/web.php).
 - [`Helper/`](core/Helper): palīgfunkcijas/palīgmetodes, lai, piemēram, vieglāk iegūtu sistēmā definētos "maršrutus",
-kad tiek veidoti skati ar tādiem elementiem, kā:
+  kad tiek veidoti skati ar tādiem elementiem, kā:
   ```html
   <a href="/events">Pasākumi</a>
   ```
@@ -240,3 +245,9 @@ kad tiek veidoti skati ar tādiem elementiem, kā:
   <a href="<?= route('events') ?>">Pasākumi</a>
   ```
 - u.c.
+
+---
+
+## Autori
+
+- [Kristiāns Kaņeps](https://github.com/KristiansKaneps)
