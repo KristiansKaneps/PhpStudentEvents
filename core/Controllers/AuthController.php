@@ -2,7 +2,8 @@
 
 namespace Controllers;
 
-use Database\Connection\DatabaseException;
+use Database\DatabaseException;
+use Services\Auth;
 
 class AuthController extends Controller {
     /**
@@ -22,5 +23,18 @@ class AuthController extends Controller {
 
         unset($user['password']); // Remove password hash for safety
         return $user;
+    }
+
+    public function login(): void {
+        $this->render('pages/auth/login');
+    }
+
+    public function register(): void {
+        $this->render('pages/auth/register');
+    }
+
+    public function logout(Auth $auth): void {
+        $auth->logout();
+        $this->redirect(route('home'));
     }
 }

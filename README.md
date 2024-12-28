@@ -68,6 +68,7 @@ cp .env.example .env
 APP_NAME="Student Events"
 ENVIRONMENT=local
 #ENVIRONMENT=production
+LOCALE=lv,en
 
 DATABASE_HOST=db
 DATABASE_NAME=student_events_db
@@ -118,9 +119,9 @@ Tīmekļa serveris apkalpo pārlūkprogrammu no [`public`](public) direktorijas.
 (ielādē projekta vides konfigurāciju, kas atrodas failā [`.env`](.env)),
 [`core/DI/dependency_injection.php`](core/DI/dependency_injection.php) (automātiska "atkarību injicēšana" konstruktoros
 vai metodēs/funkcijās, piemēram dažādi servisi, kas definēti direktorijā [`core/Services/`](core/Services)),
-[`routes/web.php`](routes/web.php) (sistēmas definētie "maršruti", piemēram, sākumlapa `/`, pasākumu lapa `/events`,
+[`routes/web.php`](routes/web.php) (sistēmas definētie maršruti, piemēram, sākumlapa `/`, pasākumu lapa `/events`,
 kontaktu lapa `/contact` u.t.t.). Sistēmā var tikt izmantoti šādi definēti maršruti, jo pastāv _Apache_ servera
-konfigurācijas fails [`.htaccess`](.htaccess), kas visus "maršrutus" vada caur [`public/index.php`](public/index.php).
+konfigurācijas fails [`.htaccess`](.htaccess), kas visus maršrutus vada caur [`public/index.php`](public/index.php).
 
 Direktorijā [`commands/`](commands) atrodas konsoles komandas, kas palīdz izstrādes gaitā. Viens piemērs tādai
 komandai ir komanda `php console migrate`, kas atrodas failā [`MigrateCommand.php`](commands/MigrateCommand.php), kas
@@ -129,6 +130,11 @@ direktorijā [`database/migrations/`](database/migrations). Šīs migrācijas ir
 datubāzes transakcijas ietvaros (tiek izmantota transakcija, lai pārliecinātos, ka datubāze netiek bojāta, ja kādā no
 SQL skriptiem ir pieļauta kļūda). Ja ir vēlme izdzēst visas datubāzes tabulas un veikt migrēšanu no jauna, tad šai pašai
 komandai var pievienot argumentu: `php console migrate fresh`.
+
+Direktorijā [`localization/`](localization) atrodas lokalizēti teksti/ziņas. Ja lietotāja sesijā ir saglabāta valoda,
+tad tā tiek automātiski izmantota skatos, ziņojumos un citur. Ja lietotāja sesijā nav saglabāta valoda, tad tā tiek
+automātiski izvēlēta pēc lietotāja tīmekļa pārlūkprogrammas HTTP `Accept-Language` galvenes (header) un sistēmā
+definētajām/pieejamajām valodām.
 
 Direktorijā [`views/`](views) atrodas visas sistēmas skatu veidnes. Piemēram:
 
@@ -157,7 +163,9 @@ Direktorijā [`core/`](core) atrodas visa sistēmas loģika:
 │   │   ├── Service.php        # Bāzes (abstrakta) servisa klase
 │   │   └── ...
 │   ├── Helper                 # Palīgrīki
+│   ├── Localization           # Lokalizācijas loģika
 │   ├── Router                 # Maršrutētāja loģika
+│   ├── Session                # Lietotāju sesiju loģika
 │   └── ...
 └── ...
 ```
@@ -224,25 +232,29 @@ Detalizētāk:
       ...
   }
   ```
-- [`Router/`](core/Router): "maršrutēšanas" loģika, kas ļauj definēt sistēmas "maršrutus" šādā veidā (piemērs):
+- [`Router/`](core/Router): maršrutēšanas loģika, kas ļauj definēt sistēmas maršrutus šādā veidā (piemērs):
   ```php
   Router::get('/', [HomeController::class, 'index'])->name('home', 'index');
   Router::get('/events', [HomeController::class, 'eventList'])->name('events');
   ...
   ```
-  Šie "maršruti" ir definēti failā [`/routes/web.php`](routes/web.php).
-- [`Helper/`](core/Helper): palīgfunkcijas/palīgmetodes, lai, piemēram, vieglāk iegūtu sistēmā definētos "maršrutus",
-  kad tiek veidoti skati ar tādiem elementiem, kā:
+  Šie maršruti ir definēti failā [`/routes/web.php`](routes/web.php).
+- [`Helper/`](core/Helper): palīgfunkcijas/palīgmetodes, kas ļauj:
+  - iztulkot statiskus tekstus lietotāja izvēlētajā valodā;
+  - vieglāk iegūt sistēmā definētos maršrutus, kad tiek veidoti skati;
+  - u.c.
+  
+  Piemēram, HTML kods:
   ```html
   <a href="/events">Pasākumi</a>
   ```
-  ko arī var rakstīt šādi:
-  ```html
-  <a href="<?php echo route('events'); ?>">Pasākumi</a>
+  var tikt uzrakstīts šādi, lai izmantotu dinamiskos maršrutus un tulkojumus:
+  ```php
+  <a href="<?php echo route('events'); ?>"><?php echo t('nav.events'); ?></a>
   ```
   jeb īsāk:
-  ```html
-  <a href="<?= route('events') ?>">Pasākumi</a>
+  ```php
+  <a href="<?= route('events') ?>"><?= t('nav.events') ?></a>
   ```
 - u.c.
 

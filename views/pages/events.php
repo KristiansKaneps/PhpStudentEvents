@@ -1,13 +1,5 @@
-<!-- Hero Section -->
-<section class="hero">
-    <h1>Discover Student Events</h1>
-    <p>Engage, participate, and grow with opportunities at our university!</p>
-    <a href="#">Explore Events</a>
-</section>
-
 <section>
-    <h2 class="section-title">Upcoming Events</h2>
-    <h1>Trending Events</h1>
+    <h2 class="section-title"><?= t('section.events.title') ?></h2>
     <ul>
         <?php /** @var array $events */ ?>
         <?php foreach ($events as $event): ?>

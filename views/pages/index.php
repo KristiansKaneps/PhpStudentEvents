@@ -1,13 +1,13 @@
 <!-- Hero Section -->
 <section class="hero">
-    <h1>Discover Student Events</h1>
-    <p>Engage, participate, and grow with opportunities at our university!</p>
-    <a href="<?= route('events') ?>">Explore Events</a>
+    <h1><?= t('section.home.title') ?></h1>
+    <p><?= t('section.home.subtitle') ?></p>
+    <a href="#"><?= t('section.home.btn.explore') ?></a>
 </section>
 
 <!-- Events Section -->
 <section>
-    <h2 class="section-title">Upcoming Events</h2>
+    <h2 class="section-title"><?= t('section.events.title') ?></h2>
     <div class="card-container">
         <div class="card">
             <img src="event1.jpg" alt="Event 1">

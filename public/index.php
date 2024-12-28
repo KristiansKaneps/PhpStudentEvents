@@ -4,7 +4,11 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'autol
 require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
 
 try {
+    // Handle dependency injection.
     require_once CORE_DIR . 'DI' . DIRECTORY_SEPARATOR . 'dependency_injection.php';
+
+    // Handle PHP sessions.
+    new \Session\SessionHandler();
 
     // Automatically load helper functions.
     $helperFiles = scandir(CORE_DIR . 'Helper', SCANDIR_SORT_ASCENDING);
@@ -15,6 +19,10 @@ try {
 
     // Register all application's routes.
     require_once ROOT_DIR . 'routes' . DIRECTORY_SEPARATOR . 'web.php';
+
+    // Register all locales.
+    $locales = explode(',', config('LOCALE'));
+    Localization\Localization::setLocales($locales);
 
     // Dispatch the current request.
     Router\Router::dispatch();

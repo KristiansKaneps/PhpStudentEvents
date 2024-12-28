@@ -1,12 +1,12 @@
 <?php
 
-namespace Database\Connection;
+namespace Database;
 
 use PDO;
 use PDOException;
 
-class Connection {
-    private static ?Connection $instance = null;
+class Database {
+    private static ?Database $instance = null;
 
     public function __clone() {} // Disable cloning
     public function __wakeup() {} // Disable de-serialization
@@ -24,9 +24,9 @@ class Connection {
         $this->dsn = "mysql:host=$this->host;dbname=$this->name;charset=UTF8";
     }
 
-    public static function getInstance(): Connection {
+    public static function getInstance(): Database {
         if (self::$instance === null) {
-            self::$instance = new Connection();
+            self::$instance = new Database();
             try {
                 self::$instance->connect();
             } catch (\Exception $e) {

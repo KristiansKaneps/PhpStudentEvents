@@ -2,8 +2,8 @@
 
 namespace Commands;
 
-use Database\Connection\Connection;
-use Database\Connection\DatabaseException;
+use Database\Database;
+use Database\DatabaseException;
 use PDO;
 
 class MigrateCommand implements ConsoleCommand {
@@ -18,7 +18,7 @@ class MigrateCommand implements ConsoleCommand {
     /**
      * @throws DatabaseException
      */
-    private function dropAllTables(Connection $connection): void {
+    private function dropAllTables(Database $connection): void {
         echo "Dropping all tables..." . PHP_EOL;
         $dropAllTables = <<<SQL
           SET FOREIGN_KEY_CHECKS = 0; 
@@ -50,7 +50,9 @@ class MigrateCommand implements ConsoleCommand {
     /**
      * @throws \Exception
      */
-    private function createMigrationsTable(Connection $connection): void {
+    private function createMigrationsTable(Database $connection): void {
+        $pdo = $connection->getPDO();
+
         $createMigrationsTable = <<<SQL
           CREATE TABLE IF NOT EXISTS migrations (
               version INTEGER NOT NULL PRIMARY KEY,
@@ -59,16 +61,42 @@ class MigrateCommand implements ConsoleCommand {
           );
         SQL;
 
-        $connection->getPDO()->beginTransaction();
+        $pdo->beginTransaction();
 
-        if ($connection->getPDO()->exec($createMigrationsTable) === false) {
-            $errorCode = $connection->getPDO()->errorCode();
-            if ($connection->getPDO()->inTransaction()) $connection->getPDO()->rollBack();
+        if ($pdo->exec($createMigrationsTable) === false) {
+            $errorCode = $pdo->errorCode();
+            if ($pdo->inTransaction()) $pdo->rollBack();
             $connection->disconnect();
             throw new \Exception("Could not create migrations table: {$errorCode}");
         }
 
-        if ($connection->getPDO()->inTransaction()) $connection->getPDO()->commit();
+        if ($pdo->inTransaction()) $pdo->commit();
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function createSessionsTable(Database $connection): void {
+        $pdo = $connection->getPDO();
+
+        $createSessionsTable = <<<SQL
+          CREATE TABLE IF NOT EXISTS sessions (
+              id VARCHAR(32) PRIMARY KEY,
+              access INT(10) NULL,
+              data TEXT NULL
+          );
+        SQL;
+
+        $pdo->beginTransaction();
+
+        if ($pdo->exec($createSessionsTable) === false) {
+            $errorCode = $pdo->errorCode();
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            $connection->disconnect();
+            throw new \Exception("Could not create sessions table: {$errorCode}");
+        }
+
+        if ($pdo->inTransaction()) $pdo->commit();
     }
 
     /**
@@ -89,7 +117,7 @@ class MigrateCommand implements ConsoleCommand {
     }
 
     function run(array $args): void {
-        $connection = Connection::getInstance();
+        $connection = Database::getInstance();
         $pdo = $connection->connect();
 
         if (count($args) > 0 && strtolower($args[0]) === 'fresh') {
@@ -151,6 +179,7 @@ class MigrateCommand implements ConsoleCommand {
         ksort($migrations);
 
         $this->createMigrationsTable($connection);
+        $this->createSessionsTable($connection);
 
         $latestVersionQuery = $pdo->query("SELECT MAX(version) FROM migrations");
         $latestVersionQuery->execute();

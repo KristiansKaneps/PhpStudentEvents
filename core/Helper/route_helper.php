@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpNoReturnAttributeCanBeAddedInspection */
 
 use Router\Router;
 

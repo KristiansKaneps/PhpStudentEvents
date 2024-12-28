@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Connection;
+namespace Database;
 
 use Exception;
 

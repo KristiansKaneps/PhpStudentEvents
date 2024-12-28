@@ -13,11 +13,11 @@ class HomeController extends Controller {
         $this->render('pages/events', ['events' => $eventService->listUpcomingEvents()]);
     }
 
-    public function contact(): void {
-        $this->render('pages/contact');
-    }
-
     public function about(): void {
         $this->render('pages/about');
+    }
+
+    public function contact(): void {
+        $this->render('pages/contact');
     }
 }

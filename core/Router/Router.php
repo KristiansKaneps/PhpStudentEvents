@@ -3,6 +3,7 @@
 namespace Router;
 
 use Controllers\Controller;
+use Localization\Localization;
 
 class Router {
     private static array $routes = array();
@@ -59,6 +60,50 @@ class Router {
         $uri = strtok($_SERVER['REQUEST_URI'], '?');
         $method = $_SERVER['REQUEST_METHOD'];
 
+        // Resolve appropriate locale.
+        $acceptedLocale = null;
+        $locales = Localization::getLocales();
+        foreach ($locales as $locale) {
+            if ((strlen($uri) > 3 && str_starts_with($uri, '/'.$locale.'/')) || str_starts_with($uri, '/'.$locale)) {
+                $acceptedLocale = $locale;
+                $uri = substr($uri, 3);
+                break;
+            }
+        }
+        if ($acceptedLocale === null && isset($_SESSION['locale'])){
+            if (in_array($_SESSION['locale'], $locales, true))
+                $acceptedLocale = $_SESSION['locale'];
+        }
+        if ($acceptedLocale === null) {
+            $languages = array();
+            $languageItems = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+
+            foreach ($languageItems as $item) {
+                $parts = explode(';q=', $item);
+                $language = str_replace('-', '_', trim($parts[0]));
+                $qValue = isset($parts[1]) ? (float) $parts[1] : 1.0;
+                $languages[$language] = $qValue;
+            }
+            arsort($languages, SORT_NUMERIC);
+
+            foreach (array_keys($languages) as $lang) {
+                $lang = strtolower($lang);
+                $langUnderscorePos = strpos($lang, '_');
+                foreach ($locales as $locale) {
+                    $locale = strtolower($locale);
+                    if ($locale === $lang) {
+                        $acceptedLocale = $locale;
+                        break 2;
+                    } else if ($locale === substr($lang, 0, $langUnderscorePos)) {
+                        $acceptedLocale = $locale;
+                        break 2;
+                    }
+                }
+            }
+        }
+        Localization::setCurrentLocale($acceptedLocale);
+
+        // Resolve route.
         $routeName = Route::__getUniqueName($method, $uri);
         /** @var Route|null $route */
         $route = self::$routes[$routeName] ?? null;

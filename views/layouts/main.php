@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="<?= locale() ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -10,18 +10,28 @@
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    <title><?= htmlspecialchars(isset($title) ? $title : config('APP.NAME')) ?></title>
+    <title><?= htmlspecialchars($title ?? t('app.name')) ?></title>
     <link rel="stylesheet" href="/assets/css/main.css">
 </head>
 <body>
 <!-- Header -->
 <header>
-    <img src="/assets/images/logo.svg" alt="<?= config('APP.NAME') ?> Logo">
+    <a class="logo-a" href="<?= route('home') ?>">
+        <img src="/assets/images/logo.svg" alt="<?= t('app.name') ?> logo">
+        <span><?= t('nav.logo_title') ?></span>
+    </a>
     <nav>
-        <a href="<?= route('home') ?>">Home</a>
-        <a href="<?= route('events') ?>">Events</a>
-        <a href="<?= route('about') ?>">About</a>
-        <a href="<?= route('contact') ?>">Contact</a>
+        <ul>
+            <li><a href="<?= route('home') ?>"><?= t('nav.home') ?></a></li>
+            <li><a href="<?= route('events') ?>"><?= t('nav.events') ?></a></li>
+            <li><a href="<?= route('about') ?>"><?= t('nav.about') ?></a></li>
+            <li><a href="<?= route('contact') ?>"><?= t('nav.contact') ?></a></li>
+            <?php if (auth()): ?>
+            <li><a href="<?= route('logout') ?>"><?= t('nav.logout') ?></a></li>
+            <?php else: ?>
+            <li><a href="<?= route('login') ?>"><?= t('nav.login') ?></a></li>
+            <?php endif; ?>
+        </ul>
     </nav>
 </header>
 
@@ -31,8 +41,8 @@
 
 <!-- Footer -->
 <footer>
-    <p>&copy; <?= date('Y') ?> <?= htmlspecialchars(config('APP.NAME')) ?>.</p>
-    <a href="<?= route('contact') ?>">Contact Us</a>
+    <p>&copy; <?= date('Y') ?> <?= htmlspecialchars(t('app.name')) ?>.</p>
+    <a href="<?= route('contact') ?>"><?= t('nav.contact') ?></a>
 </footer>
 </body>
 </html>

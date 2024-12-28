@@ -2,14 +2,14 @@
 
 namespace Controllers;
 
-use Database\Connection\Connection;
+use Database\Database;
 use JetBrains\PhpStorm\NoReturn;
 
 abstract class Controller {
-    protected readonly Connection $db;
+    protected readonly Database $db;
 
     public function __construct() {
-        $this->db = Connection::getInstance();
+        $this->db = Database::getInstance();
     }
 
     /**

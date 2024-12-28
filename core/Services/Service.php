@@ -2,13 +2,13 @@
 
 namespace Services;
 
-use Database\Connection\Connection;
+use Database\Database;
 use DI\Dependency;
 
 abstract class Service implements Dependency {
-    protected readonly Connection $db;
+    protected readonly Database $db;
 
     public function __construct() {
-        $this->db = Connection::getInstance();
+        $this->db = Database::getInstance();
     }
 }
