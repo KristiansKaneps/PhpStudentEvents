@@ -22,6 +22,16 @@ $localizedMessages = [
         'logout' => 'Logout',
         'profile' => 'My Profile',
     ],
+    'user' => [
+        'role' => [
+            'user' => 'User',
+            'organizer' => 'Organizer',
+            'admin' => 'Admin',
+            '0' => 'User',
+            '1' => 'Organizer',
+            '2' => 'Admin',
+        ],
+    ],
     'form' => [
         'label' => [
             'email' => 'E-mail',
@@ -33,6 +43,7 @@ $localizedMessages = [
             'name' => 'Name',
             'surname' => 'Surname',
             'phone' => 'Phone Number',
+            'role' => 'Role',
         ],
         'placeholder' => [
             'email' => 'E-mail',
@@ -45,6 +56,7 @@ $localizedMessages = [
             'name' => 'Name',
             'surname' => 'Surname',
             'phone' => 'Phone Number',
+            'role' => 'Role',
         ],
         'btn' => [
             'login' => 'Login',
@@ -81,6 +93,10 @@ $localizedMessages = [
         ],
         'profile' => [
             'title' => 'My Profile',
+            'subtitle' => [
+                'my_profile' => 'Your details',
+                'other_profile' => 'User\'s :name :surname details',
+            ],
         ],
     ],
     'toast' => [
@@ -118,6 +134,7 @@ $localizedMessages = [
                 'invalid_password_new_confirm' => 'Passwords do not match.',
                 'invalid_phone' => 'Invalid phone number.',
                 'invalid_student_id' => 'Invalid student ID.',
+                'new_password_matches_old_password' => 'New password is the same as old password.',
             ],
         ],
         'required' => 'Field ":name" is required.',

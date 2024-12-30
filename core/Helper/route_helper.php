@@ -5,6 +5,6 @@ use Router\Router;
 /**
  * @see Router::route()
  */
-function route(string $name): string {
-    return Router::route($name);
+function route(string $name, mixed $parameters = null): string {
+    return Router::route($name, $parameters);
 }

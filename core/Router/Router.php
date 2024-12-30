@@ -244,35 +244,52 @@ class Router {
         require VIEW_DIR . "$layout.php";
     }
 
+    private static function interpolateRouteParameters(string $path, mixed $parameters = null): string {
+        if (empty($parameters)) return $path;
+        if (is_array($parameters)) {
+            foreach ($parameters as $key => $value) {
+                if (is_int($key)) {
+                    $path = substr($path, 0, strpos($path, '{')) . $value . substr($path, strpos($path, '}') + 1);
+                } else {
+                    $path = str_replace('{' . $key . '}', strval($value), $path);
+                }
+            }
+        } else {
+            $path = substr($path, 0, strpos($path, '{')) . $parameters . substr($path, strpos($path, '}') + 1);
+        }
+        return $path;
+    }
+
     /**
-     * @param string $name
+     * @param string $name Route name.
+     * @param mixed $parameters Route parameters (for example, `.../{id}`).
      * @return string The route's URL.
      */
-    public static function route(string $name): string {
+    public static function route(string $name, mixed $parameters = null): string {
         if (isset(self::$routeAliases[$name])) {
             $aliases = self::$routeAliases[$name];
             if (!is_array($aliases)) {
                 if (isset(self::$routes[$aliases])) {
                     /** @var Route $route */
                     $route = self::$routes[$aliases];
-                    return $route->path;
+                    return self::interpolateRouteParameters($route->path, $parameters);
                 }
             } else {
                 foreach ($aliases as $alias) {
                     if (isset(self::$routes[$alias])) {
                         /** @var Route $route */
                         $route = self::$routes[$alias];
-                        return $route->path;
+                        return self::interpolateRouteParameters($route->path, $parameters);
                     }
                 }
             }
-            return $name;
+            return self::interpolateRouteParameters($name, $parameters);
         }
         if (isset(self::$routes[$name])) {
             /** @var Route $route */
             $route = self::$routes[$name];
-            return $route->path;
+            return self::interpolateRouteParameters($route->path, $parameters);
         }
-        return $name;
+        return self::interpolateRouteParameters($name, $parameters);
     }
 }

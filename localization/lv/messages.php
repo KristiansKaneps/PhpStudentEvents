@@ -22,6 +22,16 @@ $localizedMessages = [
         'logout' => 'Iziet',
         'profile' => 'Mans profils',
     ],
+    'user' => [
+        'role' => [
+            'user' => 'Lietotājs',
+            'organizer' => 'Organizators',
+            'admin' => 'Administrators',
+            '0' => 'Lietotājs',
+            '1' => 'Organizators',
+            '2' => 'Administrators',
+        ],
+    ],
     'form' => [
         'label' => [
             'email' => 'E-pasts',
@@ -33,6 +43,7 @@ $localizedMessages = [
             'name' => 'Vārds',
             'surname' => 'Uzvārds',
             'phone' => 'Telefona Nr.',
+            'role' => 'Loma',
         ],
         'placeholder' => [
             'email' => 'E-pasts',
@@ -45,6 +56,7 @@ $localizedMessages = [
             'name' => 'Vārds',
             'surname' => 'Uzvārds',
             'phone' => 'Tālruņa Nr.',
+            'role' => 'Loma',
         ],
         'btn' => [
             'login' => 'Pieslēgties',
@@ -81,6 +93,10 @@ $localizedMessages = [
         ],
         'profile' => [
             'title' => 'Mans profils',
+            'subtitle' => [
+                'my_profile' => 'Tavi profila dati',
+                'other_profile' => 'Lietotāja :name :surname profila dati',
+            ],
         ],
     ],
     'toast' => [
@@ -118,6 +134,7 @@ $localizedMessages = [
                 'invalid_password_new_confirm' => 'Paroles nesakrīt.',
                 'invalid_phone' => 'Nederīgs telefona numurs.',
                 'invalid_student_id' => 'Nederīgs studenta ID.',
+                'new_password_matches_old_password' => 'Jaunā parole ir tāda pati kā vecā parorle.',
             ],
         ],
         'required' => 'Lauks ":name" ir obligāts.',

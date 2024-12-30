@@ -1,8 +1,12 @@
-<?php /** @var array $user */ ?>
+<?php
+/** @var array $user */
+use Services\Auth;
+?>
 <section>
     <h2 class="section-title"><?= t('section.profile.title') ?></h2>
+    <p class="section-subtitle"><?= userId() === $user['id'] ? t('section.profile.subtitle.my_profile') : t('section.profile.subtitle.other_profile', $user) ?></p>
     <div class="profile-container">
-        <form action="<?= route('profile.update') ?>" method="post" class="profile-form">
+        <form action="<?= userId() === $user['id'] ? route('profile.update') : route('profile.update.other', $user['id']) ?>" method="post" class="profile-form">
             <input type="hidden" name="csrf" value="<?= csrf() ?>">
 
             <div class="form-group">
@@ -45,9 +49,24 @@
                 <?php endif; ?>
             </div>
 
+            <?php if (isAdmin()): ?>
+            <div class="form-group">
+                <label for="role"><?= t('form.label.role') ?></label>
+                <?php $selectedRole = old('role', $user['role']) ?>
+                <select id="role" name="role">
+                    <option value="<?= Auth::USER_ROLE_USER ?>" <?= $selectedRole === Auth::USER_ROLE_USER ? 'selected="selected"' : '' ?>><?= t('user.role.user') ?></option>
+                    <option value="<?= Auth::USER_ROLE_ORGANIZER ?>" <?= $selectedRole === Auth::USER_ROLE_ORGANIZER ? 'selected="selected"' : '' ?>><?= t('user.role.organizer') ?></option>
+                    <option value="<?= Auth::USER_ROLE_ADMIN ?>" <?= $selectedRole === Auth::USER_ROLE_ADMIN ? 'selected="selected"' : '' ?>><?= t('user.role.admin') ?></option>
+                </select>
+                <?php if (has('error_role')): ?>
+                <p class="error"><?= old('error_role') ?></p>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
+
             <div class="form-group">
                 <label for="password"><?= t('form.label.password') ?></label>
-                <input type="password" id="password" name="password" placeholder="<?= t('form.placeholder.password') ?>" required>
+                <input type="password" id="password" name="password" placeholder="<?= t('form.placeholder.password') ?>" <?= userId() !== $user['id'] && isAdmin() ? 'disabled="disabled"' : 'required' ?>>
                 <?php if (has('error_password')): ?>
                 <p class="error"><?= old('error_password') ?></p>
                 <?php endif; ?>

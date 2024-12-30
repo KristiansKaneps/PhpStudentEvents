@@ -93,4 +93,24 @@ abstract class Controller {
         include VIEW_DIR . DIRECTORY_SEPARATOR . 'error' . DIRECTORY_SEPARATOR . $template;
         exit;
     }
+
+    #[NoReturn] protected function unauthorized(): void {
+        $this->error(401, '401.html');
+    }
+
+    #[NoReturn] protected function forbidden(): void {
+        $this->error(403, '403.html');
+    }
+
+    #[NoReturn] protected function notFound(): void {
+        $this->error(404, '404.html');
+    }
+
+    #[NoReturn] protected function badRequest(): void {
+        $this->error(405, '405.html');
+    }
+
+    #[NoReturn] protected function internalError(): void {
+        $this->error(500, 'unknown.html');
+    }
 }

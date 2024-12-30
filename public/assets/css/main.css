@@ -113,6 +113,21 @@ nav a:hover {
     margin: 2rem 0;
 }
 
+.section-subtitle {
+    text-align: center;
+    color: #015551;
+    font-size: 1.25rem;
+    margin: 2rem 0;
+}
+
+.section-title + .section-subtitle {
+    margin-top: 0.5rem;
+}
+
+.section-title:has(+ .section-subtitle) {
+    margin-bottom: 0.5rem;
+}
+
 .card-container {
     display: flex;
     flex-wrap: wrap;
@@ -174,6 +189,10 @@ footer a:hover {
     color: #d30000;
 }
 
+input[disabled] {
+    opacity: 0.75;
+}
+
 input[name="csrf"] {
     display: none;
 }
@@ -188,14 +207,14 @@ input[name="csrf"] {
     display: block;
 }
 
-.form-group input {
+.form-group input, .form-group select {
     width: 100%;
     padding: 0.8rem;
     border: 1px solid #ddd;
     border-radius: 4px;
 }
 
-.form-group input:focus {
+.form-group input:focus, .form-group select:focus {
     outline: none;
     border-color: #015551;
     box-shadow: 0 0 5px rgba(1, 85, 81, 0.5);

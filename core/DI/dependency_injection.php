@@ -67,6 +67,9 @@ function findArgumentValueInArgumentMap(null|array $argumentMap, \ReflectionPara
             return $argumentValue;
         }
     }
+    if ($parameter->isDefaultValueAvailable()) {
+        return $parameter->getDefaultValue();
+    }
     throw new InvalidArgumentException(
         "Cannot resolve parameter '{$parameter->getName()}'. Ensure it is a class implementing '" . \DI\Dependency::class . "' or pass it via `argumentMap`."
     );

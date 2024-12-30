@@ -16,30 +16,49 @@ class Auth extends Service {
         $this->refreshCurrentUser();
     }
 
+    private function findUserBy(string $sqlWhereClause, array $params): ?array {
+        try {
+            $result = $this->db->query(<<<SQL
+                SELECT id, name, surname, email, phone, role, student_id, created_at, updated_at FROM users
+                WHERE $sqlWhereClause
+                LIMIT 1
+            SQL, $params);
+            return empty($result) ? null : $result[0];
+        } catch (DatabaseException) { }
+        return null;
+    }
+
     public function refreshCurrentUser(): void {
         $sessionId = session_id();
-        if (!empty($sessionId)) {
-            try {
-                $result = $this->db->query(<<<SQL
-                SELECT id, name, surname, email, phone, role, student_id, created_at, updated_at FROM users
-                WHERE users.id = (SELECT user_id FROM sessions WHERE sessions.id = ?)
-                LIMIT 1
-            SQL, [$sessionId]);
-                $this->user = empty($result) ? null : $result[0];
-            } catch (DatabaseException) {
-                $this->user = null;
-            }
-        } else {
-            $this->user = null;
-        }
+        $this->user = empty($sessionId)
+            ? null
+            : $this->findUserBy('users.id = (SELECT user_id FROM sessions WHERE sessions.id = ?)', [$sessionId]);
     }
 
     public function isAuthenticated(): bool {
         return !empty($this->user);
     }
 
-    public function getUser(): ?array {
-        return $this->user;
+    public function hasAdminRole(): bool {
+        return $this->isAuthenticated() && $this->user['role'] >= self::USER_ROLE_ADMIN;
+    }
+
+    public function hasOrganizerRole(): bool {
+        return $this->isAuthenticated() && $this->user['role'] >= self::USER_ROLE_ORGANIZER;
+    }
+
+    public function hasUserRole(): bool {
+        return $this->isAuthenticated() && $this->user['role'] >= self::USER_ROLE_USER;
+    }
+
+    public function hasGuestRole(): bool {
+        return !$this->isAuthenticated();
+    }
+
+    public function getUser(?int $userId = null): ?array {
+        return $userId === null || (isset($this->user['id']) && $userId === $this->user['id'])
+            ? $this->user
+            : $this->findUserBy('id = ?', [$userId]);
     }
 
     public function getUserId(): ?int {
@@ -108,6 +127,14 @@ class Auth extends Service {
         return self::LOGIN_RESULT_SUCCESS;
     }
 
+    public function changePassword(string $userId, #[\SensitiveParameter] string $newPassword): bool {
+        try {
+            $query = 'UPDATE users SET password = ? WHERE id = ?';
+            return $this->db->execute($query, [password_hash($newPassword, PASSWORD_BCRYPT, ['cost' => 13]), $userId]);
+        } catch (DatabaseException) { }
+        return false;
+    }
+
     const REGISTER_RESULT_SUCCESS = 0;
     const REGISTER_RESULT_EXCEPTION = 1;
     const REGISTER_RESULT_USER_EXISTS = 2;
@@ -149,5 +176,21 @@ class Auth extends Service {
 
     public static function userId(): ?int {
         return self::getInstance()->getUserId();
+    }
+
+    public static function adminRole(): bool {
+        return self::getInstance()->hasAdminRole();
+    }
+
+    public static function organizerRole(): bool {
+        return self::getInstance()->hasOrganizerRole();
+    }
+
+    public static function userRole(): bool {
+        return self::getInstance()->hasUserRole();
+    }
+
+    public static function guestRole(): bool {
+        return self::getInstance()->hasGuestRole();
     }
 }

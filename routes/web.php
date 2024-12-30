@@ -20,6 +20,8 @@ Router::define(['GET', 'POST'], '/logout', [AuthController::class, 'logout'])->n
 // Profile Controller
 Router::get('/profile', [ProfileController::class, 'profile'])->name('profile');
 Router::post('/profile/update', [ProfileController::class, 'profile'])->name('profile.update');
+Router::get('/profile/{userId}', [ProfileController::class, 'profile'])->name('profile.other');
+Router::post('/profile/update/{userId}', [ProfileController::class, 'profile'])->name('profile.update.other');
 
 // Event Controller
 Router::get('/event/{id}', [EventController::class, 'show'])->name('event.show');
