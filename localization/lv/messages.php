@@ -44,6 +44,14 @@ $localizedMessages = [
             'surname' => 'Uzvārds',
             'phone' => 'Telefona Nr.',
             'role' => 'Loma',
+            'event' => [
+                'name' => 'Pasākuma nosaukums',
+                'description' => 'Apraksts',
+                'category' => 'Kategorija',
+                'max_participant_count' => 'Maksimālais dalībnieku skaits',
+                'start_date' => 'Sākuma datums un laiks',
+                'end_date' => 'Beigu datums un laiks',
+            ],
         ],
         'placeholder' => [
             'email' => 'E-pasts',
@@ -57,11 +65,18 @@ $localizedMessages = [
             'surname' => 'Uzvārds',
             'phone' => 'Tālruņa Nr.',
             'role' => 'Loma',
+            'event' => [
+                'name' => 'Ievadiet pasākuma nosaukumu',
+                'description' => 'Ievadiet pasākuma aprakstu',
+                'category' => 'Atlasīt kategoriju',
+                'max_participant_count' => 'Ievadiet maksimālo dalībnieku skaitu (0 - neierobežotam skaitam)',
+            ],
         ],
         'btn' => [
             'login' => 'Pieslēgties',
             'register' => 'Reģistrēties',
             'save_changes' => 'Saglabāt izmaiņas',
+            'create' => 'Izveidot',
         ],
         'alt' => [
             'no_account' => 'Nav konta?',
@@ -78,6 +93,13 @@ $localizedMessages = [
         ],
         'events' => [
             'title' => 'Gaidāmie pasākumi',
+            'subtitle' => [
+                'user' => 'Atklājiet un izpētiet jums pielāgotus gaidāmos pasākumus.',
+                'organizer' => 'Pārvaldiet savus pasākumus un izveidojiet jaunus, lai piesaistītu auditoriju.',
+            ],
+            'no_events' => 'Pašlaik nav pasākumu, ko parādīt. Lūdzu, pārbaudiet vēlāk!',
+            'list_title' => 'Pasākumu saraksts',
+            'create_title' => 'Izveidojiet jaunu pasākumu',
         ],
         'about' => [
             'title' => 'Par studentu pasākumiem',
@@ -103,11 +125,13 @@ $localizedMessages = [
         'success' => [
             'registered' => 'Jūs esat veiksmīgi reģistrējies!',
             'profile_updated' => 'Profils atjaunināts!',
+            'event_created' => 'Pasākums izveidots!',
         ],
         'info' => [],
         'error' => [
             'registered' => 'Neizdevās reģistrēties. Lūdzu, vēlāk mēģiniet vēlreiz.',
             'profile_updated' => 'Neizdevās atjaunināt profilu. Lūdzu, vēlāk mēģiniet vēlreiz.',
+            'event_created' => 'Neizdevās izveidot pasākumu. Lūdzu vēlāk mēģiniet vēlreiz.',
         ],
     ],
     'validation' => [
@@ -136,6 +160,11 @@ $localizedMessages = [
                 'invalid_student_id' => 'Nederīgs studenta ID.',
                 'new_password_matches_old_password' => 'Jaunā parole ir tāda pati kā vecā parorle.',
             ],
+        ],
+        'event' => [
+            'end_before_start' => 'Sākuma datumam ir jābūt pirms beigu datuma.',
+            'start_in_past' => 'Sākuma datumam ir jābūt nākotnē.',
+            'max_participant_count_negative' => 'Maksimālajam dalībnieku skaitam jābūt 0 vai pozitīvam skaitlim.',
         ],
         'required' => 'Lauks ":name" ir obligāts.',
         'email' => 'Laukam ":name" ir jābūt korektai e-pasta adresei.',

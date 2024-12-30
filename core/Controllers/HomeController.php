@@ -9,10 +9,6 @@ class HomeController extends Controller {
         $this->render('pages/index', ['events' => $eventService->getTrendingEvents()]);
     }
 
-    public function eventList(EventService $eventService): void {
-        $this->render('pages/events', ['events' => $eventService->listUpcomingEvents()]);
-    }
-
     public function about(): void {
         $this->render('pages/about');
     }

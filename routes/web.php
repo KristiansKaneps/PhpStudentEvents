@@ -8,7 +8,6 @@ use Router\Router;
 
 // Home Controller
 Router::get('/', [HomeController::class, 'index'])->name('home', 'index');
-Router::get('/events', [HomeController::class, 'eventList'])->name('events');
 Router::get('/about', [HomeController::class, 'about'])->name('about');
 Router::get('/contact', [HomeController::class, 'contact'])->name('contact');
 
@@ -24,4 +23,6 @@ Router::get('/profile/{userId}', [ProfileController::class, 'profile'])->name('p
 Router::post('/profile/update/{userId}', [ProfileController::class, 'profile'])->name('profile.update.other');
 
 // Event Controller
-Router::get('/event/{id}', [EventController::class, 'show'])->name('event.show');
+Router::get('/events', [EventController::class, 'list'])->name('event.list');
+Router::get('/event/{id}', [EventController::class, 'view'])->name('event.view');
+Router::post('/event/create', [EventController::class, 'create'])->name('event.create');

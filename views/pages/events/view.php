@@ -1,3 +1,4 @@
+<?php /** @var array $event */ ?>
 <section>
     <h2 class="section-title"><?= htmlspecialchars($event['name']) ?></h2>
     <h1><?= htmlspecialchars($event['name']) ?></h1>

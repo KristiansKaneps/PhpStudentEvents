@@ -2,7 +2,7 @@
 <section class="hero">
     <h1><?= t('section.home.title') ?></h1>
     <p><?= t('section.home.subtitle') ?></p>
-    <a href="#"><?= t('section.home.btn.explore') ?></a>
+    <a href="<?= route('event.list') ?>"><?= t('section.home.btn.explore') ?></a>
 </section>
 
 <!-- Events Section -->

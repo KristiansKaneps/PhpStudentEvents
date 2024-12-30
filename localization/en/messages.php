@@ -44,6 +44,14 @@ $localizedMessages = [
             'surname' => 'Surname',
             'phone' => 'Phone Number',
             'role' => 'Role',
+            'event' => [
+                'name' => 'Event Name',
+                'description' => 'Description',
+                'category' => 'Category',
+                'max_participant_count' => 'Maximum Participants',
+                'start_date' => 'Start Date & Time',
+                'end_date' => 'End Date & Time',
+            ],
         ],
         'placeholder' => [
             'email' => 'E-mail',
@@ -57,11 +65,18 @@ $localizedMessages = [
             'surname' => 'Surname',
             'phone' => 'Phone Number',
             'role' => 'Role',
+            'event' => [
+                'name' => 'Enter event name',
+                'description' => 'Enter event description',
+                'category' => 'Select a category',
+                'max_participant_count' => 'Enter max participants (0 for unlimited)',
+            ],
         ],
         'btn' => [
             'login' => 'Login',
             'register' => 'Register',
             'save_changes' => 'Save Changes',
+            'create' => 'Create',
         ],
         'alt' => [
             'no_account' => 'No account?',
@@ -78,6 +93,13 @@ $localizedMessages = [
         ],
         'events' => [
             'title' => 'Upcoming Events',
+            'subtitle' => [
+                'user' => 'Discover and explore upcoming events tailored for you.',
+                'organizer' => 'Manage your events and create new ones to engage your audience.',
+            ],
+            'no_events' => 'No events to display at the moment. Please check back later!',
+            'list_title' => 'Event List',
+            'create_title' => 'Create a New Event',
         ],
         'about' => [
             'title' => 'About Student Events',
@@ -103,11 +125,13 @@ $localizedMessages = [
         'success' => [
             'registered' => 'You have successfully registered!',
             'profile_updated' => 'Profile updated!',
+            'event_created' => 'Event created!',
         ],
         'info' => [],
         'error' => [
             'registered' => 'Could not register. Please try again later.',
             'profile_updated' => 'Could not update profile. Please try again later.',
+            'event_created' => 'Could not create event. Please try again later.',
         ],
     ],
     'validation' => [
@@ -136,6 +160,11 @@ $localizedMessages = [
                 'invalid_student_id' => 'Invalid student ID.',
                 'new_password_matches_old_password' => 'New password is the same as old password.',
             ],
+        ],
+        'event' => [
+            'end_before_start' => 'Start date must be before end date.',
+            'start_in_past' => 'Start date must be in the future.',
+            'max_participant_count_negative' => 'Max participant count must be 0 or positive number.',
         ],
         'required' => 'Field ":name" is required.',
         'email' => 'Field ":name" must be a valid e-mail address.',
