@@ -19,14 +19,14 @@ class Router {
     }
 
     /**
-     * Define a GET route.
+     * Define a route.
      * @param string $path
      * @param callable|array $action
      * @param null|string $name
      * @return Route
      */
-    public static function get(string $path, callable|array $action, null|string $name = null): Route {
-        $route = new Route('GET', $path, $action, $name, '__renameRoute');
+    public static function define(string|array $method, string $path, callable|array $action, null|string $name = null): Route {
+        $route = new Route($method, $path, $action, $name, '__renameRoute');
         if (is_array($route->name)) {
             foreach ($route->name as $name)
                 self::$routes[$name] = $route;
@@ -37,20 +37,36 @@ class Router {
     }
 
     /**
-     * Define a POST route.
-     * @param string $uri
+     * Define a GET route.
+     * @param string $path
      * @param callable|array $action
+     * @param null|string $name
      * @return Route
      */
-    public function post(string $path, callable|array $action, null|string $name = null): Route {
-        $route = new Route('POST', $path, $action, $name, '__renameRoute');
-        if (is_array($route->name)) {
-            foreach ($route->name as $name)
-                self::$routes[$name] = $route;
-        } else {
-            self::$routes[$route->name] = $route;
+    public static function get(string $path, callable|array $action, null|string $name = null): Route {
+        return self::define('GET', $path, $action, $name);
+    }
+
+    /**
+     * Define a POST route.
+     * @param string $path
+     * @param callable|array $action
+     * @param null|string $name
+     * @return Route
+     */
+    public static function post(string $path, callable|array $action, null|string $name = null): Route {
+        return self::define('POST', $path, $action, $name);
+    }
+
+    /**
+     * Get existing or generate a new CSRF token.
+     * @throws \Exception If an appropriate source of randomness cannot be found.
+     */
+    public static function getCsrfToken(): string {
+        if (empty($_SESSION['csrf-token'])) {
+            $_SESSION['csrf-token'] = bin2hex(random_bytes(32));
         }
-        return $route;
+        return $_SESSION['csrf-token'];
     }
 
     /**
@@ -64,9 +80,13 @@ class Router {
         $acceptedLocale = null;
         $locales = Localization::getLocales();
         foreach ($locales as $locale) {
-            if ((strlen($uri) > 3 && str_starts_with($uri, '/'.$locale.'/')) || str_starts_with($uri, '/'.$locale)) {
+            if (str_starts_with($uri, '/'.$locale.'/')) {
                 $acceptedLocale = $locale;
                 $uri = substr($uri, 3);
+                break;
+            } else if (strlen($uri) === 3 && str_starts_with($uri, '/'.$locale)) {
+                $acceptedLocale = $locale;
+                $uri = '/'.substr($uri, 3);
                 break;
             }
         }
@@ -107,8 +127,8 @@ class Router {
         $routeName = Route::__getUniqueName($method, $uri);
         /** @var Route|null $route */
         $route = self::$routes[$routeName] ?? null;
-        /** @var array|false $arguments */
-        $arguments = false;
+        /** @var array|null $arguments */
+        $arguments = null;
 
         /**
          * Find corresponding route.
@@ -131,17 +151,17 @@ class Router {
         if (!$route) {
             http_response_code(404);
             include VIEW_DIR . DIRECTORY_SEPARATOR . 'error' . DIRECTORY_SEPARATOR . '404.html';
-            return;
+            exit;
         }
 
         if (
-            (is_array($route->method) && in_array($method, $route->method))
-            || $method !== $route->method
+            (is_array($route->method) && !in_array($method, $route->method))
+            || (is_string($route->method) && $method !== $route->method)
         ) {
             http_response_code(405);
             header('Allow: ' . (is_array($route->method) ? implode(', ', $route->method) : $route->method));
             include VIEW_DIR . DIRECTORY_SEPARATOR . 'error' . DIRECTORY_SEPARATOR . '405.html';
-            return;
+            exit;
         }
 
         $action = $route->action;
@@ -149,8 +169,35 @@ class Router {
         if (!$action) {
             http_response_code(500);
             include VIEW_DIR . DIRECTORY_SEPARATOR . 'error' . DIRECTORY_SEPARATOR . 'unknown.html';
-            return;
+            exit;
         }
+
+        if ($method === 'POST') {
+            if (isset($_POST['csrf'])) {
+                try {
+                    if (!hash_equals(self::getCsrfToken(), $_POST['csrf'])) {
+                        http_response_code(403);
+                        include VIEW_DIR . DIRECTORY_SEPARATOR . 'error' . DIRECTORY_SEPARATOR . '403.html';
+                        exit;
+                    }
+                } catch (\Exception) {
+                    http_response_code(500);
+                    include VIEW_DIR . DIRECTORY_SEPARATOR . 'error' . DIRECTORY_SEPARATOR . 'unknown.html';
+                    exit;
+                }
+            } else {
+                http_response_code(403);
+                include VIEW_DIR . DIRECTORY_SEPARATOR . 'error' . DIRECTORY_SEPARATOR . '403.html';
+                exit;
+            }
+
+            $data = $_POST;
+        } else {
+            $data = $_GET;
+        }
+
+        unset($_SESSION['flash']);
+        resolve(Request::class, new Request($route, $method, $data));
 
         if (config('ENVIRONMENT') === 'production') {
             try {
@@ -163,7 +210,7 @@ class Router {
             } catch (\Error | \Exception $e) {
                 http_response_code(500);
                 include VIEW_DIR . DIRECTORY_SEPARATOR . 'error' . DIRECTORY_SEPARATOR . 'unknown.html';
-                return;
+                exit;
             }
         } else {
             if (is_callable($action)) {
@@ -214,7 +261,7 @@ class Router {
                 foreach ($aliases as $alias) {
                     if (isset(self::$routes[$alias])) {
                         /** @var Route $route */
-                        $route = self::$routeAliases[$alias];
+                        $route = self::$routes[$alias];
                         return $route->path;
                     }
                 }

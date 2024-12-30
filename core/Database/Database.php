@@ -72,17 +72,33 @@ class Database {
     }
 
     /**
-     * Execute a prepared query with parameters.
-     * @param string $sql
-     * @param array $params
-     * @return array
+     * Execute a prepared query with parameters and return result.
+     * @param string $sql SQL query.
+     * @param array $params PDO parameters.
+     * @return array Query results as associative PHP array.
      * @throws DatabaseException
      */
-    public function executeQuery(string $sql, array $params = []): array {
+    public function query(string $sql, array $params = []): array {
         try {
             $stmt = $this->getPDO()->prepare($sql);
             $stmt->execute($params);
             return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            throw DatabaseException::from($e);
+        }
+    }
+
+    /**
+     * Execute a prepared query with parameters.
+     * @param string $sql SQL query.
+     * @param array $params PDO parameters.
+     * @return bool `true` if successful, `false` otherwise.
+     * @throws DatabaseException
+     */
+    public function execute(string $sql, array $params = []): bool {
+        try {
+            $stmt = $this->getPDO()->prepare($sql);
+            return $stmt->execute($params);
         } catch (PDOException $e) {
             throw DatabaseException::from($e);
         }
@@ -94,6 +110,7 @@ class Database {
      */
     public function beginTransaction(): void {
         try {
+            if ($this->getPDO()->inTransaction()) return;
             $this->getPDO()->beginTransaction();
         } catch (PDOException $e) {
             throw DatabaseException::from($e);
@@ -106,6 +123,7 @@ class Database {
      */
     public function commitTransaction(): void {
         try {
+            if (!$this->getPDO()->inTransaction()) return;
             $this->getPDO()->commit();
         } catch (PDOException $e) {
             throw DatabaseException::from($e);
@@ -118,6 +136,7 @@ class Database {
      */
     public function rollbackTransaction(): void {
         try {
+            if (!$this->getPDO()->inTransaction()) return;
             $this->getPDO()->rollBack();
         } catch (PDOException $e) {
             throw DatabaseException::from($e);

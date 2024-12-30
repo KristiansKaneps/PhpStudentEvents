@@ -4,6 +4,8 @@ namespace Controllers;
 
 use Database\Database;
 use JetBrains\PhpStorm\NoReturn;
+use Router\Request;
+use Router\Router;
 
 abstract class Controller {
     protected readonly Database $db;
@@ -34,6 +36,35 @@ abstract class Controller {
     }
 
     /**
+     * Flash a value from session.
+     * @param mixed $key Key.
+     * @param mixed|null $value Value.
+     * @return void
+     */
+    protected function flash(mixed $key, mixed $value = null): void {
+        if (is_array($key)) {
+            foreach ($key as $k => $v)
+                $this->flash($k, $v);
+        } else if (is_object($key) && get_class($key) === Request::class) {
+            $this->flash($key->data);
+        } else {
+            $_SESSION['flash'][$key] = $value;
+        }
+    }
+
+    /**
+     * Show a toast notification from session.
+     * @param string $type Notification type (one of: `success`, `info`, `error`).
+     * @param string $text Notification text.
+     * @return void
+     */
+    protected function toast(string $type, string $text): void {
+        if (!isset($_SESSION['flash']['toast'][$type]))
+            $_SESSION['flash']['toast'][$type] = [];
+        $_SESSION['flash']['toast'][$type][] = $text;
+    }
+
+    /**
      * Return a JSON response.
      * @param mixed $data
      * @param int $status
@@ -52,7 +83,14 @@ abstract class Controller {
      * @return void
      */
     #[NoReturn] protected function redirect(string $url): void {
+        $url = Router::route($url);
         header("Location: $url");
+        exit;
+    }
+
+    #[NoReturn] protected function error(int $statusCode, string $template = 'unknown.html'): void {
+        http_response_code($statusCode);
+        include VIEW_DIR . DIRECTORY_SEPARATOR . 'error' . DIRECTORY_SEPARATOR . $template;
         exit;
     }
 }

@@ -27,6 +27,7 @@
             <li><a href="<?= route('about') ?>"><?= t('nav.about') ?></a></li>
             <li><a href="<?= route('contact') ?>"><?= t('nav.contact') ?></a></li>
             <?php if (auth()): ?>
+            <li><a href="<?= route('profile') ?>"><?= t('nav.profile') ?></a></li>
             <li><a href="<?= route('logout') ?>"><?= t('nav.logout') ?></a></li>
             <?php else: ?>
             <li><a href="<?= route('login') ?>"><?= t('nav.login') ?></a></li>
@@ -37,6 +38,24 @@
 
 <main>
     <?= $content ?? '' ?>
+    <ul class="toast-container">
+        <?php foreach (toasts('success') as $toastText): ?>
+        <li class="toast success">
+            <span class="toast-icon">✔</span>
+            <?= $toastText ?>
+        </li>
+        <?php endforeach; foreach(toasts('error') as $toastText): ?>
+        <li class="toast error">
+            <span class="toast-icon">⚠</span>
+            <?= $toastText ?>
+        </li>
+        <?php endforeach; foreach(toasts('info') as $toastText): ?>
+        <li class="toast info">
+            <span class="toast-icon">ℹ</span>
+            <?= $toastText ?>
+        </li>
+        <?php endforeach; ?>
+    </ul>
 </main>
 
 <!-- Footer -->
@@ -44,5 +63,12 @@
     <p>&copy; <?= date('Y') ?> <?= htmlspecialchars(t('app.name')) ?>.</p>
     <a href="<?= route('contact') ?>"><?= t('nav.contact') ?></a>
 </footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toasts = document.querySelectorAll('.toast');
+        toasts.forEach((toast) => setTimeout(toast.remove, 3500));
+    });
+</script>
 </body>
 </html>

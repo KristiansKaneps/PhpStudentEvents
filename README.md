@@ -260,6 +260,11 @@ Detalizētāk:
 
 ---
 
+## Potenciālās nākotnes optimizācijas
+- [ ] Maršrutu kešošana.
+
+---
+
 ## Autori
 
 - [Kristiāns Kaņeps](https://github.com/KristiansKaneps)

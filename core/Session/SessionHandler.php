@@ -78,13 +78,14 @@ class SessionHandler implements \SessionHandlerInterface {
             $pdo = Database::getInstance()->getPDO();
             /** @var PDOStatement|false $stmt */
             $stmt = $pdo->prepare(<<<SQL
-                INSERT INTO sessions (id, access, data) VALUES (?, ?, ?) 
+                INSERT INTO sessions (id, user_id, access, data) VALUES (?, ?, ?, ?) 
                 ON DUPLICATE KEY UPDATE 
+                    user_id = VALUES(user_id),
                     access = VALUES(access), 
                     data = VALUES(data)
             SQL);
             if ($stmt === false) return false;
-            return $stmt->execute([$id, time(), $data]);
+            return $stmt->execute([$id, \Services\Auth::userId(), time(), $data]);
         } catch (\PDOException | DatabaseException) { }
         return false;
     }

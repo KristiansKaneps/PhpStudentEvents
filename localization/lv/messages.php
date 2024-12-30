@@ -20,6 +20,41 @@ $localizedMessages = [
         'login' => 'Ienākt',
         'register' => 'Reģistrēties',
         'logout' => 'Iziet',
+        'profile' => 'Mans profils',
+    ],
+    'form' => [
+        'label' => [
+            'email' => 'E-pasts',
+            'password' => 'Parole',
+            'password_old' => 'Vecā parole',
+            'password_new' => 'Jaunā parole',
+            'password_change' => 'Paroles maiņa',
+            'student_id' => 'Studenta ID',
+            'name' => 'Vārds',
+            'surname' => 'Uzvārds',
+            'phone' => 'Telefona Nr.',
+        ],
+        'placeholder' => [
+            'email' => 'E-pasts',
+            'password' => 'Parole',
+            'password_confirm' => 'Parole atkārtoti',
+            'password_old' => 'Vecā parole',
+            'password_new' => 'Jaunā parole',
+            'password_new_confirm' => 'Jaunā parole atkārtoti',
+            'student_id' => 'Studenta ID',
+            'name' => 'Vārds',
+            'surname' => 'Uzvārds',
+            'phone' => 'Tālruņa Nr.',
+        ],
+        'btn' => [
+            'login' => 'Pieslēgties',
+            'register' => 'Reģistrēties',
+            'save_changes' => 'Saglabāt izmaiņas',
+        ],
+        'alt' => [
+            'no_account' => 'Nav konta?',
+            'is_account' => 'Jau esi reģistrējies?',
+        ],
     ],
     'section' => [
         'home' => [
@@ -40,17 +75,53 @@ $localizedMessages = [
         ],
         'register' => [
             'title' => 'Reģistrēties',
-            'btn' => [
-                'login' => 'Pieslēgties',
-                'register' => 'Reģistrēties',
-            ],
         ],
         'login' => [
             'title' => 'Pieslēgties',
-            'btn' => [
-                'login' => 'Pieslēgties',
-                'register' => 'Reģistrēties',
+        ],
+        'profile' => [
+            'title' => 'Mans profils',
+        ],
+    ],
+    'toast' => [
+        'success' => [
+            'registered' => 'Jūs esat veiksmīgi reģistrējies!',
+            'profile_updated' => 'Profils atjaunināts!',
+        ],
+        'info' => [],
+        'error' => [
+            'registered' => 'Neizdevās reģistrēties. Lūdzu, vēlāk mēģiniet vēlreiz.',
+            'profile_updated' => 'Neizdevās atjaunināt profilu. Lūdzu, vēlāk mēģiniet vēlreiz.',
+        ],
+    ],
+    'validation' => [
+        'auth' => [
+            'login' => [
+                'invalid_email' => 'Nezināma e-pasta adrese.',
+                'invalid_password' => 'Nepareiza parole.',
+            ],
+            'register' => [
+                'invalid_email' => 'Nederīga e-pasta address.',
+                'taken_email' => 'E-pasta adrese ir aizņemta.',
+                'invalid_password' => 'Nederīga parole. Tai jābūt vismaz 8 rakstzīmēm.',
+                'invalid_password_confirm' => 'Paroles nesakrīt.',
+                'invalid_phone' => 'Nederīgs telefona numurs.',
+                'invalid_student_id' => 'Nederīgs studenta ID.',
             ],
         ],
+        'profile' => [
+            'update' => [
+                'invalid_email' => 'Nederīga e-pasta address.',
+                'taken_email' => 'E-pasta adrese ir aizņemta.',
+                'invalid_password' => 'Nepareiza parole.',
+                'invalid_password_new' => 'Nederīga parole. Tai jābūt vismaz 8 rakstzīmēm.',
+                'invalid_password_new_confirm' => 'Paroles nesakrīt.',
+                'invalid_phone' => 'Nederīgs telefona numurs.',
+                'invalid_student_id' => 'Nederīgs studenta ID.',
+            ],
+        ],
+        'required' => 'Lauks ":name" ir obligāts.',
+        'email' => 'Laukam ":name" ir jābūt korektai e-pasta adresei.',
+        'phone' => 'Laukam ":name" ir jābūt korektam tālr. nr.',
     ],
 ];

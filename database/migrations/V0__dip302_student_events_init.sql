@@ -7,7 +7,7 @@ create table users
     student_id varchar(9)       null,
     phone      varchar(23)      null,
     role       tinyint unsigned not null default 0, -- 0 - user; 1 - organizer; 2 - admin
-    password   binary(60)       not null,
+    password   varchar(255)     not null,
     created_at datetime         not null default now(),
     updated_at datetime         not null default now()
 );

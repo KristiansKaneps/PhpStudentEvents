@@ -82,6 +82,7 @@ class MigrateCommand implements ConsoleCommand {
         $createSessionsTable = <<<SQL
           CREATE TABLE IF NOT EXISTS sessions (
               id VARCHAR(32) PRIMARY KEY,
+              user_id BIGINT NULL,
               access INT(10) NULL,
               data TEXT NULL
           );

@@ -7,11 +7,17 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . 'Dependency.php');
  * Resolves and returns an instance of the given dependency class.
  * @template T
  * @param class-string<T> $dependencyClass The fully qualified class name to resolve.
+ * @param T $override The instance that should be resolved in successive calls to this function (or `null` if it should
+ *                    not be overridden, or `false` if it should be reset).
  * @return T The resolved instance of the given class.
  * @throws InvalidArgumentException If the class does not implement \DI\Dependency.
  */
-function resolve(string $dependencyClass): \DI\Dependency {
+function resolve(string $dependencyClass, mixed $override = null): \DI\Dependency {
     static $dependencyInstances = [];
+
+    if ($override === false) unset($dependencyInstances[$dependencyClass]);
+    else if (!empty($override)) $dependencyInstances[$dependencyClass] = $override;
+
     if (isset($dependencyInstances[$dependencyClass]))
         return $dependencyInstances[$dependencyClass];
 

@@ -20,6 +20,41 @@ $localizedMessages = [
         'login' => 'Login',
         'register' => 'Register',
         'logout' => 'Logout',
+        'profile' => 'My Profile',
+    ],
+    'form' => [
+        'label' => [
+            'email' => 'E-mail',
+            'password' => 'Password',
+            'password_old' => 'Old Password',
+            'password_new' => 'New Password',
+            'password_change' => 'Change Password',
+            'student_id' => 'Student ID',
+            'name' => 'Name',
+            'surname' => 'Surname',
+            'phone' => 'Phone Number',
+        ],
+        'placeholder' => [
+            'email' => 'E-mail',
+            'password' => 'Password',
+            'password_confirm' => 'Repeat password',
+            'password_old' => 'Old password',
+            'password_new' => 'New password',
+            'password_new_confirm' => 'Repeat new password',
+            'student_id' => 'Student ID',
+            'name' => 'Name',
+            'surname' => 'Surname',
+            'phone' => 'Phone Number',
+        ],
+        'btn' => [
+            'login' => 'Login',
+            'register' => 'Register',
+            'save_changes' => 'Save Changes',
+        ],
+        'alt' => [
+            'no_account' => 'No account?',
+            'is_account' => 'Have already registered?',
+        ],
     ],
     'section' => [
         'home' => [
@@ -40,17 +75,53 @@ $localizedMessages = [
         ],
         'register' => [
             'title' => 'Register',
-            'btn' => [
-                'login' => 'Login',
-                'register' => 'Register',
-            ],
         ],
         'login' => [
             'title' => 'Login',
-            'btn' => [
-                'login' => 'Login',
-                'register' => 'Register',
+        ],
+        'profile' => [
+            'title' => 'My Profile',
+        ],
+    ],
+    'toast' => [
+        'success' => [
+            'registered' => 'You have successfully registered!',
+            'profile_updated' => 'Profile updated!',
+        ],
+        'info' => [],
+        'error' => [
+            'registered' => 'Could not register. Please try again later.',
+            'profile_updated' => 'Could not update profile. Please try again later.',
+        ],
+    ],
+    'validation' => [
+        'auth' => [
+            'login' => [
+                'invalid_email' => 'Unknown e-mail address.',
+                'invalid_password' => 'Invalid password.',
+            ],
+            'register' => [
+                'invalid_email' => 'Invalid e-mail address.',
+                'taken_email' => 'E-mail address is already taken.',
+                'invalid_password' => 'Invalid password. It must be at least 8 characters.',
+                'invalid_password_confirm' => 'Passwords do not match.',
+                'invalid_phone' => 'Invalid phone number.',
+                'invalid_student_id' => 'Invalid student ID.',
             ],
         ],
+        'profile' => [
+            'update' => [
+                'invalid_email' => 'Invalid e-mail address.',
+                'taken_email' => 'E-mail address is already taken.',
+                'invalid_password' => 'Invalid password.',
+                'invalid_password_new' => 'Invalid password. It must be at least 8 characters.',
+                'invalid_password_new_confirm' => 'Passwords do not match.',
+                'invalid_phone' => 'Invalid phone number.',
+                'invalid_student_id' => 'Invalid student ID.',
+            ],
+        ],
+        'required' => 'Field ":name" is required.',
+        'email' => 'Field ":name" must be a valid e-mail address.',
+        'phone' => 'Field ":name" must be a valid phone number.',
     ],
 ];
