@@ -58,13 +58,23 @@ function resolve(string $dependencyClass, mixed $override = null): \DI\Dependenc
     return $instance;
 }
 
-function findArgumentValueInArgumentMap(null|array $argumentMap, \ReflectionParameter $parameter): mixed {
+function findArgumentValueInArgumentMap(null|array $argumentMap, null|\ReflectionType $type, \ReflectionParameter $parameter): mixed {
     if (!empty($argumentMap)) {
         $parameterName = strtolower(str_replace('_', '', $parameter->getName()));
         foreach ($argumentMap as $argumentName => $argumentValue) {
             if (strtolower(str_replace('_', '', $argumentName)) !== $parameterName)
                 continue;
-            return $argumentValue;
+            if (!$type || $type->isBuiltin() === false)
+                return $argumentValue;
+            $typeName = $type->getName();
+            return match ($typeName) {
+                'int' => (int) $argumentValue,
+                'float' => (float) $argumentValue,
+                'string' => (string) $argumentValue,
+                'bool' => (bool) $argumentValue,
+                'array' => (array) $argumentValue,
+                default => $argumentValue,
+            };
         }
     }
     if ($parameter->isDefaultValueAvailable()) {
@@ -101,13 +111,13 @@ function resolveAndCallFunction(string|callable $function, null|array $argumentM
             }
             try {
                 if ($parameterType->isBuiltin()) {
-                    return findArgumentValueInArgumentMap($argumentMap, $parameter);
+                    return findArgumentValueInArgumentMap($argumentMap, $parameterType, $parameter);
                 } else {
                     $dependencyClass = $parameterType->getName();
                     return resolve($dependencyClass);
                 }
             } catch (InvalidArgumentException) {
-                return findArgumentValueInArgumentMap($argumentMap, $parameter);
+                return findArgumentValueInArgumentMap($argumentMap, $parameterType, $parameter);
             }
         }, $parameters);
         return $reflectionFunction->invokeArgs($resolvedParameters);
@@ -143,13 +153,13 @@ function resolveAndCallMethod(string $method, object $instance, null|array $argu
             }
             try {
                 if ($parameterType->isBuiltin()) {
-                    return findArgumentValueInArgumentMap($argumentMap, $parameter);
+                    return findArgumentValueInArgumentMap($argumentMap, $parameterType, $parameter);
                 } else {
                     $dependencyClass = $parameterType->getName();
                     return resolve($dependencyClass);
                 }
             } catch (InvalidArgumentException) {
-                return findArgumentValueInArgumentMap($argumentMap, $parameter);
+                return findArgumentValueInArgumentMap($argumentMap, $parameterType, $parameter);
             }
         }, $parameters);
         return $reflectionMethod->invokeArgs($instance, $resolvedParameters);

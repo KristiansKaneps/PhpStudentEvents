@@ -23,7 +23,7 @@
     <nav>
         <ul>
             <li><a href="<?= route('home') ?>"><?= t('nav.home') ?></a></li>
-            <li><a href="<?= route('events') ?>"><?= t('nav.events') ?></a></li>
+            <li><a href="<?= route('event.list') ?>"><?= t('nav.events') ?></a></li>
             <li><a href="<?= route('about') ?>"><?= t('nav.about') ?></a></li>
             <li><a href="<?= route('contact') ?>"><?= t('nav.contact') ?></a></li>
             <?php if (auth()): ?>
