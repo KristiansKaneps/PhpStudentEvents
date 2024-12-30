@@ -3,6 +3,14 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'autol
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
 
+$production = config('ENVIRONMENT') !== 'development' && config('ENVIRONMENT') !== 'local';
+
+if ($production) {
+    ini_set("display_errors", 'Off');
+    ini_set("log_errors", 'On');
+    ini_set("error_log", "syslog");
+}
+
 try {
     // Handle dependency injection.
     require_once CORE_DIR . 'DI' . DIRECTORY_SEPARATOR . 'dependency_injection.php';
@@ -27,7 +35,7 @@ try {
     // Dispatch the current request.
     Router\Router::dispatch();
 } catch (\Error | \Exception $e) {
-    if (config('ENVIRONMENT') !== 'development' && config('ENVIRONMENT') !== 'local') {
+    if ($production) {
         http_response_code(500);
         include_once PUBLIC_DIR . DIRECTORY_SEPARATOR . 'error' . DIRECTORY_SEPARATOR . 'unknown.html';
     } else {

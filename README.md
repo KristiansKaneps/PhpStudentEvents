@@ -139,7 +139,7 @@ definētajām/pieejamajām valodām.
 Direktorijā [`views/`](views) atrodas visas sistēmas skatu veidnes. Piemēram:
 
 - [`pages/index.php`](views/pages/index.php): sākumlapas skata veidne;
-- [`pages/events.php`](views/pages/events.php): pasākumu lapas skata veidne;
+- [`pages/events/list.php`](views/pages/events/list.php): pasākumu saraksta lapas skata veidne;
 - [`pages/contact.php`](views/pages/contact.php): kontaktu lapas skata veidne;
 - u.c.
 
@@ -179,7 +179,7 @@ Detalizētāk:
       ...
       public function eventList(EventService $eventService): void {
           ...
-          $this->render('pages/events', ['events' => $eventService->listUpcomingEvents()]);
+          $this->render('pages/events/list', ['events' => $eventService->listUpcomingEvents()]);
       }
       ...
   }
@@ -204,7 +204,7 @@ Detalizētāk:
   ```
   > **Piezīmes:**
   >   - `EventService` tiek automātiski inicializēts un "injicēts" metodē `eventList`;
-  >   - `'pages/events'` nozīmē to pašu, ko [`/views/pages/events.php`](views/pages/events.php).
+  >   - `'pages/events/list'` nozīmē to pašu, ko [`/views/pages/events/list.php`](views/pages/events/list.php).
 - [`Database/`](core/Database): datubāzes loģika (savienošanās, vaicājumi u.c.):
     - savienošanās tiek veikta ar PHP PDO, un tiek mainīts savienojuma iestatījums, lai būtu vieglāk izgūt vaicājumu
       rezultātus:
@@ -249,10 +249,6 @@ Detalizētāk:
   <a href="/events">Pasākumi</a>
   ```
   var tikt uzrakstīts šādi, lai izmantotu dinamiskos maršrutus un tulkojumus:
-  ```php
-  <a href="<?php echo route('events'); ?>"><?php echo t('nav.events'); ?></a>
-  ```
-  jeb īsāk:
   ```php
   <a href="<?= route('events') ?>"><?= t('nav.events') ?></a>
   ```

@@ -8,6 +8,7 @@ class ProfileService extends Service {
 
     public function updateUser(int $userId, #[\SensitiveParameter] array $data): int {
         try {
+            /** @noinspection SqlWithoutWhere */
             $query = 'UPDATE users SET ';
             $password = $data['password'] ?? null;
             $data = array_filter($data, function ($key) { return $key !== 'password'; }, ARRAY_FILTER_USE_KEY);
