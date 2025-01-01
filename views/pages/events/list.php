@@ -9,14 +9,45 @@ use Services\Auth;
 
     <div class="events-container">
         <div class="events-list">
-            <h3 class="section-subtitle"><?= t('section.events.list_title') ?></h3>
             <ul>
                 <?php if (count($events) > 0): ?>
                 <?php foreach ($events as $eventData): ?>
                 <li class="event-item">
-                    <h4 class="event-title"><?= htmlspecialchars($eventData['name']) ?></h4>
-                    <p class="event-date"><?= htmlspecialchars($eventData['start_date']) ?> – <?= htmlspecialchars($eventData['end_date']) ?></p>
+                    <a class="event-link" href="<?= route('event.view', $eventData['id']) ?>">
+                        <h4 class="event-title"><?= htmlspecialchars($eventData['name']) ?></h4>
+                    </a>
+                    <p class="event-category">
+                        <?= t('section.events.category', ['category' => htmlspecialchars($eventData['category_name'])]) ?>
+                    </p>
+                    <p class="event-date">
+                        <?= htmlspecialchars($eventData['start_date']) ?> – <?= htmlspecialchars($eventData['end_date']) ?>
+                    </p>
                     <p class="event-description"><?= htmlspecialchars($eventData['description']) ?></p>
+                    <p class="event-participants">
+                        <?= t($eventData['max_participant_count'] == 0 ? 'section.events.participants_unlimited' : 'section.events.participants_limited', [
+                            'current' => htmlspecialchars($eventData['current_participant_count']),
+                            'max' => htmlspecialchars($eventData['max_participant_count']),
+                        ]) ?>
+                    </p>
+                    <?php if ($eventData['cancelled']): ?>
+                    <p class="event-cancelled"><?= t('section.events.cancelled') ?></p>
+                    <?php endif; ?>
+
+                    <!-- Event Actions -->
+                    <?php if(isAdmin() || (isOrganizer() && userId() === $eventData['user_id'])): ?>
+                    <div class="event-actions">
+                        <?php if (!$eventData['cancelled']): ?>
+                        <form method="POST" action="<?= route('event.list.cancel', $eventData['id']) ?>">
+                            <input type="hidden" name="csrf" value="<?= csrf() ?>">
+                            <button type="submit" class="btn btn-cancel"><?= t('form.btn.cancel_event') ?></button>
+                        </form>
+                        <?php endif; ?>
+                        <form method="POST" action="<?= route('event.list.delete', $eventData['id']) ?>">
+                            <input type="hidden" name="csrf" value="<?= csrf() ?>">
+                            <button type="submit" class="btn btn-delete"><?= t('form.btn.delete_event') ?></button>
+                        </form>
+                    </div>
+                    <?php endif; ?>
                 </li>
                 <?php endforeach; ?>
                 <?php else: ?>

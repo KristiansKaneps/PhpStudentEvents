@@ -26,3 +26,5 @@ Router::post('/profile/update/{userId}', [ProfileController::class, 'profile'])-
 Router::get('/events', [EventController::class, 'list'])->name('event.list');
 Router::get('/event/{id}', [EventController::class, 'view'])->name('event.view');
 Router::post('/event/create', [EventController::class, 'create'])->name('event.create');
+Router::post('/event/cancel/{id}', [EventController::class, 'listCancel'])->name('event.list.cancel');
+Router::post('/event/delete/{id}', [EventController::class, 'listDelete'])->name('event.list.delete');

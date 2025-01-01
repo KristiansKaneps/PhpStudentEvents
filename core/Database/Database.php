@@ -16,6 +16,8 @@ class Database {
 
     private ?PDO $pdo = null;
 
+    private ?\PDOStatement $lastStatement = null;
+
     private function __construct() {
         $this->host = config('DATABASE_HOST');
         $this->name = config('DATABASE_NAME');
@@ -60,6 +62,7 @@ class Database {
     }
 
     public function disconnect(): void {
+        $this->lastStatement = null;
         $this->pdo = null; // PHP automatically destructs this object and closes the connection.
     }
 
@@ -72,6 +75,13 @@ class Database {
     }
 
     /**
+     * @return int Last statement's affected row count.
+     */
+    public function rowCount(): int {
+        return $this->lastStatement === null ? 0 : $this->lastStatement->rowCount();
+    }
+
+    /**
      * Execute a prepared query with parameters and return result.
      * @param string $sql SQL query.
      * @param array $params PDO parameters.
@@ -81,7 +91,8 @@ class Database {
     public function query(string $sql, array $params = []): array {
         try {
             $stmt = $this->getPDO()->prepare($sql);
-            $stmt->execute($params);
+            $this->lastStatement = $stmt;
+            if (!$stmt->execute($params)) return [];
             return $stmt->fetchAll();
         } catch (PDOException $e) {
             throw DatabaseException::from($e);
@@ -98,6 +109,7 @@ class Database {
     public function execute(string $sql, array $params = []): bool {
         try {
             $stmt = $this->getPDO()->prepare($sql);
+            $this->lastStatement = $stmt;
             return $stmt->execute($params);
         } catch (PDOException $e) {
             throw DatabaseException::from($e);

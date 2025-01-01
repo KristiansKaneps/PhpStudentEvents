@@ -43,7 +43,8 @@ create table events
     end_date                  datetime     not null,
     cancelled                 bool         not null default false,
     created_at                datetime     not null default now(),
-    updated_at                datetime     not null default now()
+    updated_at                datetime     not null default now(),
+    deleted_at                datetime     null
 );
 
 create table notifications

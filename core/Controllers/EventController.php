@@ -63,16 +63,69 @@ class EventController extends Controller {
         }
 
         $request->setInput('user_id', $auth->getUserId());
-        $result = $eventService->createEvent($request->retainInput(['user_id', 'start_date', 'end_date', 'category_id', 'name', 'description', 'max_participant_count']));
+        $eventData = $request->retainInput(['user_id', 'start_date', 'end_date', 'category_id', 'name', 'description', 'max_participant_count']);
+        if (!$eventService->isJustCreatedByEventData($eventData)) {
+            $result = $eventService->createEvent($eventData);
 
-        switch ($result) {
-            case EventService::CREATE_EVENT_RESULT_SUCCESS:
-                $this->toast('success', t('toast.success.event_created'));
-                $this->render('pages/events/list', ['events' => $eventService->listUpcomingEvents(), 'categories' => $eventService->listCategories()]);
-                return;
-            case EventService::CREATE_EVENT_RESULT_EXCEPTION:
-                $this->flash($request->data);
-                $this->toast('error', t('toast.error.event_created'));
+            switch ($result) {
+                case EventService::CREATE_EVENT_RESULT_SUCCESS:
+                    $this->toast('success', t('toast.success.event_created'));
+                    $this->render('pages/events/list', ['events' => $eventService->listUpcomingEvents(), 'categories' => $eventService->listCategories()]);
+                    return;
+                case EventService::CREATE_EVENT_RESULT_EXCEPTION:
+                    $this->flash($request->data);
+                    $this->toast('error', t('toast.error.event_created'));
+            }
+        }
+
+        $this->render('pages/events/list', ['events' => $eventService->listUpcomingEvents(), 'categories' => $eventService->listCategories()]);
+    }
+
+    public function listCancel(Auth $auth, EventService $eventService, int $id): void {
+        if (!$auth->hasOrganizerRole()) {
+            $this->unauthorized();
+        }
+
+        $event = $eventService->find($id);
+
+        if (empty($event)) {
+            $this->notFound();
+        }
+
+        if ($event['user_id'] !== $auth->getUserId() && !$auth->hasAdminRole()) {
+            $this->unauthorized();
+        }
+
+        $result = $eventService->cancelEvent($id); // `null` means that it did nothing (no message should be displayed)
+        if ($result === true) {
+            $this->toast('success', t('toast.success.event_cancelled', ['name' => $event['name']]));
+        } else if ($result === false) {
+            $this->toast('error', t('toast.error.event_cancelled', ['name' => $event['name']]));
+        }
+
+        $this->render('pages/events/list', ['events' => $eventService->listUpcomingEvents(), 'categories' => $eventService->listCategories()]);
+    }
+
+    public function listDelete(Auth $auth, EventService $eventService, int $id): void {
+        if (!$auth->hasOrganizerRole()) {
+            $this->unauthorized();
+        }
+
+        $event = $eventService->find($id);
+
+        if (empty($event)) {
+            $this->notFound();
+        }
+
+        if ($event['user_id'] !== $auth->getUserId() && !$auth->hasAdminRole()) {
+            $this->unauthorized();
+        }
+
+        $result = $eventService->deleteEvent($id); // `null` means that it did nothing (no message should be displayed)
+        if ($result === true) {
+            $this->toast('success', t('toast.success.event_deleted', ['name' => $event['name']]));
+        } else if ($result === false) {
+            $this->toast('error', t('toast.error.event_deleted', ['name' => $event['name']]));
         }
 
         $this->render('pages/events/list', ['events' => $eventService->listUpcomingEvents(), 'categories' => $eventService->listCategories()]);
