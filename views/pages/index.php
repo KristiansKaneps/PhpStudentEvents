@@ -1,3 +1,4 @@
+<?php /** @var array $events */ ?>
 <!-- Hero Section -->
 <section class="hero">
     <h1><?= t('section.home.title') ?></h1>
@@ -9,20 +10,23 @@
 <section>
     <h2 class="section-title"><?= t('section.events.title') ?></h2>
     <div class="card-container">
+        <?php if (count($events) > 0): ?>
+        <?php foreach ($events as $eventData): ?>
         <div class="card">
-            <img src="event1.jpg" alt="Event 1">
-            <h3>Tech Innovation Fair</h3>
-            <p>Join us to witness the latest technological breakthroughs!</p>
+            <span class="tag"><?= htmlspecialchars($eventData['category_name']) ?></span>
+            <span class="tag-opposite event-date"><?= htmlspecialchars($eventData['start_date']) ?></span>
+            <h3><?= htmlspecialchars($eventData['name']) ?></h3>
+            <p class="event-participants">
+                <?= t($eventData['max_participant_count'] == 0 ? 'section.events.participants_unlimited' : 'section.events.participants_limited', [
+                    'current' => htmlspecialchars($eventData['current_participant_count']),
+                    'max' => htmlspecialchars($eventData['max_participant_count']),
+                ]) ?>
+            </p>
+            <p class="event-description text"><?= htmlspecialchars($eventData['description']) ?></p>
         </div>
-        <div class="card">
-            <img src="event2.jpg" alt="Event 2">
-            <h3>Student Networking Night</h3>
-            <p>Build connections and explore career opportunities.</p>
-        </div>
-        <div class="card">
-            <img src="event3.jpg" alt="Event 3">
-            <h3>Sports Week</h3>
-            <p>Participate in exciting sports activities and competitions!</p>
-        </div>
+        <?php endforeach; ?>
+        <?php else: ?>
+        <p class="no-events"><?= t('section.events.no_events') ?></p>
+        <?php endif; ?>
     </div>
 </section>

@@ -46,14 +46,13 @@ class EventService extends Service {
                 FROM events e
                 JOIN event_categories ec ON e.category_id = ec.id
                 LEFT JOIN event_participants ep ON e.id = ep.event_id AND ep.user_id = :user_id
-                WHERE e.start_date >= NOW() $cancelledQuery
+                WHERE e.start_date > NOW() $cancelledQuery
                     AND e.deleted_at IS NULL
                 ORDER BY e.start_date ASC, e.end_date DESC
                 SQL,
                 ['user_id' => $userId],
             );
-        } catch (\Exception) {
-        }
+        } catch (\Exception) { }
         return [];
     }
 
@@ -65,10 +64,9 @@ class EventService extends Service {
                 FROM events e
                 JOIN event_categories ec ON e.category_id = ec.id
                 LEFT JOIN event_participants ep ON e.id = ep.event_id AND ep.user_id = :user_id
-                WHERE e.cancelled = false AND (e.user_id = :user_id OR e.cancelled = false)
-                    AND e.deleted_at IS NULL
+                WHERE e.cancelled = false AND e.deleted_at IS NULL AND start_date > NOW()
                 ORDER BY e.current_participant_count DESC, e.start_date
-                LIMIT 5
+                LIMIT 3
                 SQL,
                 ['user_id' => $userId],
             );

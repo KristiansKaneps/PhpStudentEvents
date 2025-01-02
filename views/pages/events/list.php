@@ -1,7 +1,6 @@
 <?php
 /** @var array $events */
 /** @var array $categories */
-use Services\Auth;
 ?>
 <section>
     <h2 class="section-title"><?= t('section.events.title') ?></h2>
