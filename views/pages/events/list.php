@@ -34,8 +34,8 @@ use Services\Auth;
                     <?php endif; ?>
 
                     <!-- Event Actions -->
-                    <?php if(isAdmin() || (isOrganizer() && userId() === $eventData['user_id'])): ?>
                     <div class="event-actions">
+                        <?php if (isAdmin() || (isOrganizer() && userId() === $eventData['user_id'])): ?>
                         <?php if (!$eventData['cancelled']): ?>
                         <form method="POST" action="<?= route('event.list.cancel', $eventData['id']) ?>">
                             <input type="hidden" name="csrf" value="<?= csrf() ?>">
@@ -46,8 +46,18 @@ use Services\Auth;
                             <input type="hidden" name="csrf" value="<?= csrf() ?>">
                             <button type="submit" class="btn btn-delete"><?= t('form.btn.delete_event') ?></button>
                         </form>
+                        <?php endif; ?>
+                        <?php if (userId() !== $eventData['user_id'] && !$eventData['cancelled']): ?>
+                        <form method="POST" action="<?= route('event.participant.add', $eventData['id']) ?>">
+                            <input type="hidden" name="csrf" value="<?= csrf() ?>">
+                            <button type="submit" class="btn btn-join"><?= t('form.btn.join_event') ?></button>
+                        </form>
+                        <form method="POST" action="<?= route('event.participant.remove', $eventData['id']) ?>">
+                            <input type="hidden" name="csrf" value="<?= csrf() ?>">
+                            <button type="submit" class="btn btn-leave"><?= t('form.btn.leave_event') ?></button>
+                        </form>
+                        <?php endif; ?>
                     </div>
-                    <?php endif; ?>
                 </li>
                 <?php endforeach; ?>
                 <?php else: ?>
@@ -65,7 +75,7 @@ use Services\Auth;
                 <!-- Event Name -->
                 <div class="form-group">
                     <label for="name"><?= t('form.label.event.name') ?></label>
-                    <input type="text" id="name" name="name" placeholder="<?= t('form.placeholder.event.name') ?>" value="<?= old('name', $event['name'] ?? '') ?>" maxlength="127" required>
+                    <input type="text" id="name" name="name" placeholder="<?= t('form.placeholder.event.name') ?>" value="<?= old('name', $event['name'] ?? '') ?>" maxlength="127" autocomplete="off">
                     <?php if (has('error_name')): ?>
                     <p class="error"><?= old('error_name') ?></p>
                     <?php endif; ?>
@@ -74,7 +84,7 @@ use Services\Auth;
                 <!-- Description -->
                 <div class="form-group">
                     <label for="description"><?= t('form.label.event.description') ?></label>
-                    <textarea id="description" name="description" placeholder="<?= t('form.placeholder.event.description') ?>" rows="10" required><?= old('description', $event['description'] ?? '') ?></textarea>
+                    <textarea id="description" name="description" placeholder="<?= t('form.placeholder.event.description') ?>" rows="10" required autocomplete="off"><?= old('description', $event['description'] ?? '') ?></textarea>
                     <?php if (has('error_description')): ?>
                     <p class="error"><?= old('error_description') ?></p>
                     <?php endif; ?>
@@ -83,7 +93,7 @@ use Services\Auth;
                 <!-- Category -->
                 <div class="form-group">
                     <label for="category_id"><?= t('form.label.event.category') ?></label>
-                    <select id="category_id" name="category_id" required>
+                    <select id="category_id" name="category_id" required autocomplete="off">
                         <?php $selectedCategory = old('category_id', $event['category_id'] ?? ''); ?>
                         <option value="" <?= empty($selectedCategory) ? 'disabled="disabled" selected="selected"' : '' ?>><?= t('form.placeholder.event.category') ?></option>
                         <?php foreach ($categories as $category): ?>
@@ -98,7 +108,7 @@ use Services\Auth;
                 <!-- Max Participants -->
                 <div class="form-group">
                     <label for="max_participant_count"><?= t('form.label.event.max_participant_count') ?></label>
-                    <input type="number" id="max_participant_count" name="max_participant_count" placeholder="<?= t('form.placeholder.event.max_participant_count') ?>" value="<?= old('max_participant_count', $event['max_participant_count'] ?? '') ?>" min="0" required>
+                    <input type="number" id="max_participant_count" name="max_participant_count" placeholder="<?= t('form.placeholder.event.max_participant_count') ?>" value="<?= old('max_participant_count', $event['max_participant_count'] ?? '') ?>" min="0" required autocomplete="off">
                     <?php if (has('error_max_participant_count')): ?>
                     <p class="error"><?= old('error_max_participant_count') ?></p>
                     <?php endif; ?>
@@ -107,7 +117,7 @@ use Services\Auth;
                 <!-- Start Date -->
                 <div class="form-group">
                     <label for="start_date"><?= t('form.label.event.start_date') ?></label>
-                    <input type="datetime-local" id="start_date" name="start_date" value="<?= old('start_date', $event['start_date'] ?? '') ?>" required>
+                    <input type="datetime-local" id="start_date" name="start_date" value="<?= old('start_date', $event['start_date'] ?? '') ?>" required autocomplete="off">
                     <?php if (has('error_start_date')): ?>
                     <p class="error"><?= old('error_start_date') ?></p>
                     <?php endif; ?>
@@ -116,7 +126,7 @@ use Services\Auth;
                 <!-- End Date -->
                 <div class="form-group">
                     <label for="end_date"><?= t('form.label.event.end_date') ?></label>
-                    <input type="datetime-local" id="end_date" name="end_date" value="<?= old('end_date', $event['end_date'] ?? '') ?>" required>
+                    <input type="datetime-local" id="end_date" name="end_date" value="<?= old('end_date', $event['end_date'] ?? '') ?>" required autocomplete="off">
                     <?php if (has('error_end_date')): ?>
                     <p class="error"><?= old('error_end_date') ?></p>
                     <?php endif; ?>

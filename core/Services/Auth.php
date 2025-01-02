@@ -55,6 +55,13 @@ class Auth extends Service {
         return !$this->isAuthenticated();
     }
 
+    public function userExists(int $userId): bool {
+        try {
+            return !empty($this->db->query("SELECT 1 FROM users WHERE id = ?", [$userId]));
+        } catch (\Exception) { }
+        return false;
+    }
+
     public function getUser(?int $userId = null): ?array {
         return $userId === null || (isset($this->user['id']) && $userId === $this->user['id'])
             ? $this->user

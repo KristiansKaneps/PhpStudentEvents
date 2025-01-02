@@ -86,30 +86,11 @@ class EventService extends Service {
         return self::CREATE_EVENT_RESULT_EXCEPTION;
     }
 
-    public function isJustCreatedByEventData(array $eventData): bool {
+    public function getParticipants(int $id): array {
         try {
-            $result = $this->db->query(<<<SQL
-                SELECT 1 FROM events
-                WHERE name = :name AND start_date = :start_date AND end_date = :end_date AND user_id = :user_id
-                    AND cancelled = false AND deleted_at IS NULL AND category_id = :category_id
-                    AND max_participant_count = :max_participant_count
-                SQL,
-                [
-                    'name' => $eventData['name'],
-                    'start_date' => $eventData['start_date'],
-                    'end_date' => $eventData['end_date'],
-                    'user_id' => $eventData['user_id'],
-                    'category_id' => $eventData['category_id'],
-                    'max_participant_count' => $eventData['max_participant_count'],
-                ],
-            );
-            return !empty($result);
+            return $this->db->query('SELECT user_id FROM event_participants WHERE event_id = ?', [$id]);
         } catch (\Exception) { }
-        return false;
-    }
-
-    private function notifyEventCancellation(int $id): void {
-
+        return [];
     }
 
     public function cancelEvent(int $id): ?bool {
@@ -117,7 +98,6 @@ class EventService extends Service {
             $success = $this->db->execute(<<<SQL
                 UPDATE events SET cancelled = true WHERE id = ? AND deleted_at IS NULL
             SQL, [$id]);
-            if ($success) $this->notifyEventCancellation($id);
             return $success ? ($this->db->rowCount() > 0 ? true : null) : false;
         } catch (\Exception) { }
         return false;
@@ -131,5 +111,100 @@ class EventService extends Service {
             return $success ? ($this->db->rowCount() > 0 ? true : null) : false;
         } catch (\Exception) { }
         return false;
+    }
+
+    const ADD_PARTICIPANT_RESULT_SUCCESS = 0;
+    const ADD_PARTICIPANT_RESULT_ALREADY_PARTICIPATES = 1;
+    const ADD_PARTICIPANT_RESULT_MAX_PARTICIPANTS_REACHED = 2;
+    const ADD_PARTICIPANT_RESULT_EVENT_NOT_FOUND = 3;
+    const ADD_PARTICIPANT_RESULT_USER_NOT_FOUND = 4;
+    const ADD_PARTICIPANT_RESULT_EXCEPTION = 5;
+
+    public function addParticipant(int $eventId, int $userId): int {
+        try {
+            $eventService = resolve(EventService::class);
+            $event = $eventService->find($eventId);
+            if (empty($event))
+                return self::ADD_PARTICIPANT_RESULT_EVENT_NOT_FOUND;
+
+            if (!resolve(Auth::class)->userExists($userId))
+                return self::ADD_PARTICIPANT_RESULT_USER_NOT_FOUND;
+
+            $isParticipant = !empty($this->db->query(<<<SQL
+                SELECT 1 FROM event_participants WHERE event_id = ? AND user_id = ?
+                SQL,
+                [$eventId, $userId]
+            ));
+            if ($isParticipant)
+                return self::ADD_PARTICIPANT_RESULT_ALREADY_PARTICIPATES;
+
+            $maxParticipantCount = $event['max_participant_count'];
+            $currentParticipantCount = $event['current_participant_count'];
+
+            if ($currentParticipantCount >= $maxParticipantCount)
+                return self::ADD_PARTICIPANT_RESULT_MAX_PARTICIPANTS_REACHED;
+
+            $this->db->beginTransaction();
+
+            $success = $this->db->execute(
+                'UPDATE events SET current_participant_count = current_participant_count + 1 WHERE id = ?',
+                [$eventId]
+            );
+            if (!$success)
+                return self::ADD_PARTICIPANT_RESULT_EXCEPTION;
+
+            $success = $this->db->execute(
+                'INSERT INTO event_participants (user_id, event_id) VALUES (:user_id, :event_id)',
+                ['user_id' => $userId, 'event_id' => $eventId]
+            );
+            if (!$success)
+                return self::ADD_PARTICIPANT_RESULT_EXCEPTION;
+
+            $this->db->commitTransaction();
+            return self::ADD_PARTICIPANT_RESULT_SUCCESS;
+        } catch (\Exception) { }
+        return self::ADD_PARTICIPANT_RESULT_EXCEPTION;
+    }
+
+    const REMOVE_PARTICIPANT_RESULT_SUCCESS = 0;
+    const REMOVE_PARTICIPANT_RESULT_IS_NOT_PARTICIPANT = 1;
+    const REMOVE_PARTICIPANT_RESULT_EVENT_NOT_FOUND = 2;
+    const REMOVE_PARTICIPANT_RESULT_EXCEPTION = 3;
+
+    public function removeParticipant($eventId, $userId): int {
+        try {
+            $eventService = resolve(EventService::class);
+            $event = $eventService->find($eventId);
+            if (empty($event))
+                return self::REMOVE_PARTICIPANT_RESULT_EVENT_NOT_FOUND;
+
+            $isNotParticipant = empty($this->db->query(<<<SQL
+                SELECT 1 FROM event_participants WHERE event_id = ? AND user_id = ?
+                SQL,
+                [$eventId, $userId]
+            ));
+            if ($isNotParticipant)
+                return self::REMOVE_PARTICIPANT_RESULT_IS_NOT_PARTICIPANT;
+
+            $this->db->beginTransaction();
+
+            $success = $this->db->execute(
+                'UPDATE events SET current_participant_count = current_participant_count - 1 WHERE id = ?',
+                [$eventId]
+            );
+            if (!$success)
+                return self::REMOVE_PARTICIPANT_RESULT_EXCEPTION;
+
+            $success = $this->db->execute(
+                'DELETE FROM event_participants WHERE user_id = :user_id AND event_id = :event_id',
+                ['user_id' => $userId, 'event_id' => $eventId]
+            );
+            if (!$success)
+                return self::REMOVE_PARTICIPANT_RESULT_EXCEPTION;
+
+            $this->db->commitTransaction();
+            return self::REMOVE_PARTICIPANT_RESULT_SUCCESS;
+        } catch (\Exception) { }
+        return self::REMOVE_PARTICIPANT_RESULT_EXCEPTION;
     }
 }

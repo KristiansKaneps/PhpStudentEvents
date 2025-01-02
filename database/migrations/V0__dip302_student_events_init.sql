@@ -49,16 +49,20 @@ create table events
 
 create table notifications
 (
-    event_id     bigint            not null references events (id) on update cascade,
-    user_id      bigint            not null references users (id) on update cascade,
+    id           bigint            not null auto_increment primary key,
+    event_id     bigint            null references events (id) on update cascade on delete cascade,
+    user_id      bigint            null references users (id) on update cascade on delete cascade,
+    session_id   varchar(32)       null references sessions (id) on update cascade on delete cascade,
     type         tinyint unsigned  not null,
     type_counter smallint unsigned not null default 0,
     message      varchar(255)      not null,
     description  text              not null default '',
-    status       tinyint unsigned  not null default 0, -- 0 - not sent; 1 - sent
-    viewed_at    datetime          null,
+    timeout      int unsigned      not null default 3500,
+    priority     tinyint unsigned  not null default 0,
+    status       tinyint unsigned  not null default 0, -- 0 - not sent; 1 - sent; 255 - to delete
     created_at   datetime          not null default now(),
-    primary key (event_id, user_id, type, type_counter)
+    unique key (event_id, user_id, session_id, type, type_counter)
+
 );
 
 create table event_participants

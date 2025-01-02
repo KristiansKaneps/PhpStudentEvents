@@ -9,7 +9,6 @@ use Router\Router;
 // Home Controller
 Router::get('/', [HomeController::class, 'index'])->name('home', 'index');
 Router::get('/about', [HomeController::class, 'about'])->name('about');
-Router::get('/contact', [HomeController::class, 'contact'])->name('contact');
 
 // Auth Controller
 Router::define(['GET', 'POST'], '/login', [AuthController::class, 'login'])->name('login');
@@ -28,3 +27,5 @@ Router::get('/event/{id}', [EventController::class, 'view'])->name('event.view')
 Router::post('/event/create', [EventController::class, 'create'])->name('event.create');
 Router::post('/event/cancel/{id}', [EventController::class, 'listCancel'])->name('event.list.cancel');
 Router::post('/event/delete/{id}', [EventController::class, 'listDelete'])->name('event.list.delete');
+Router::post('/event/participant/add/{id}', [EventController::class, 'listAddParticipant'])->name('event.participant.add');
+Router::post('/event/participant/remove/{id}', [EventController::class, 'listRemoveParticipant'])->name('event.participant.remove');

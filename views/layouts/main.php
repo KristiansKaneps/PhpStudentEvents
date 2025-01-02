@@ -1,3 +1,6 @@
+<?php
+use Types\NotificationType;
+?>
 <!doctype html>
 <html lang="<?= locale() ?>">
 <head>
@@ -25,7 +28,6 @@
             <li><a href="<?= route('home') ?>"><?= t('nav.home') ?></a></li>
             <li><a href="<?= route('event.list') ?>"><?= t('nav.events') ?></a></li>
             <li><a href="<?= route('about') ?>"><?= t('nav.about') ?></a></li>
-            <li><a href="<?= route('contact') ?>"><?= t('nav.contact') ?></a></li>
             <?php if (auth()): ?>
             <li><a href="<?= route('profile') ?>"><?= t('nav.profile') ?></a></li>
             <li><a href="<?= route('logout') ?>"><?= t('nav.logout') ?></a></li>
@@ -39,20 +41,10 @@
 <main>
     <?= $content ?? '' ?>
     <ul class="toast-container">
-        <?php foreach (toasts('success') as $toastText): ?>
-        <li class="toast success">
-            <span class="toast-icon">✔</span>
-            <?= $toastText ?>
-        </li>
-        <?php endforeach; foreach(toasts('error') as $toastText): ?>
-        <li class="toast error">
-            <span class="toast-icon">⚠</span>
-            <?= $toastText ?>
-        </li>
-        <?php endforeach; foreach(toasts('info') as $toastText): ?>
-        <li class="toast info">
-            <span class="toast-icon">ℹ</span>
-            <?= $toastText ?>
+        <?php foreach (toasts() as $toastNotification): ?>
+        <li class="toast <?= NotificationType::toString($toastNotification['type']) ?>" data-timeout="<?= $toastNotification['timeout'] ?>">
+            <span class="toast-icon"><?= NotificationType::getCharIcon($toastNotification['type']) ?></span>
+            <?= $toastNotification['message'] ?>
         </li>
         <?php endforeach; ?>
     </ul>
@@ -61,13 +53,13 @@
 <!-- Footer -->
 <footer>
     <p>&copy; <?= date('Y') ?> <?= htmlspecialchars(t('app.name')) ?>.</p>
-    <a href="<?= route('contact') ?>"><?= t('nav.contact') ?></a>
+    <a href="<?= route('about') ?>"><?= t('nav.about') ?></a>
 </footer>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const toasts = document.querySelectorAll('.toast');
-        toasts.forEach((toast) => setTimeout(toast.remove, 3500));
+        toasts.forEach((toast) => setTimeout(toast.remove, toast.hasAttribute('data-timeout') ? Number(toast.getAttribute('data-timeout')) : 3500));
     });
 </script>
 </body>

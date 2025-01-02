@@ -59,7 +59,7 @@ class Localization {
 
         if ($parameters !== null) {
             foreach ($parameters as $key => $value) {
-                $message = str_replace(':' . $key, $value, $message);
+                $message = str_replace(':' . $key, $value ?? '', $message);
             }
         }
 

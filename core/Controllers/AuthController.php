@@ -35,6 +35,7 @@ class AuthController extends Controller {
 
             switch ($status) {
                 case Auth::LOGIN_RESULT_SUCCESS:
+                    $this->toastSuccess(t('toast.success.login'));
                     $this->redirect('home');
                 case Auth::LOGIN_RESULT_INVALID_PASSWORD:
                     $this->flash('error_password', t('validation.auth.login.invalid_password'));
@@ -94,9 +95,10 @@ class AuthController extends Controller {
 
             switch ($status) {
                 case Auth::REGISTER_RESULT_SUCCESS:
+                    $this->toastSuccess(t('toast.success.registered'));
                     $this->redirect('home');
                 case Auth::REGISTER_RESULT_EXCEPTION:
-                    $this->toast('error', t('toast.error.registered'));
+                    $this->toastError(t('toast.error.registered'));
                     $this->flash($request);
                     break;
                 case Auth::REGISTER_RESULT_USER_EXISTS:
@@ -115,6 +117,7 @@ class AuthController extends Controller {
 
     #[NoReturn] public function logout(Auth $auth): void {
         $auth->logout();
+        $this->toastInfo(t('toast.info.logout'));
         $this->redirect(route('login'));
     }
 }

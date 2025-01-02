@@ -6,12 +6,20 @@ use Database\Database;
 use JetBrains\PhpStorm\NoReturn;
 use Router\Request;
 use Router\Router;
+use Services\Auth;
+use Services\NotificationService;
+use Types\NotificationType;
 
 abstract class Controller {
     protected readonly Database $db;
 
+    protected readonly Auth $auth;
+    protected readonly NotificationService $notificationService;
+
     public function __construct() {
         $this->db = Database::getInstance();
+        $this->auth = resolve(Auth::class);
+        $this->notificationService = resolve(NotificationService::class);
     }
 
     /**
@@ -37,31 +45,67 @@ abstract class Controller {
 
     /**
      * Flash a value from session.
-     * @param mixed $key Key.
-     * @param mixed|null $value Value.
+     * @param mixed $key Key (or key-value pairs if an array).
+     * @param mixed|null $value Value (or hops if the key is an array).
+     * @param int $hops How many hops (or redirects) should this flash data be available for? (default: 0)
+     *                  (unused if the key is an array).
      * @return void
      */
-    protected function flash(mixed $key, mixed $value = null): void {
+    protected function flash(mixed $key, mixed $value = null, int $hops = 0): void {
         if (is_array($key)) {
             foreach ($key as $k => $v)
-                $this->flash($k, $v);
+                $this->flash($k, $v, max($hops, empty($value) ? 0 : (is_int($value) ? $value : 0)));
         } else if (is_object($key) && get_class($key) === Request::class) {
-            $this->flash($key->data);
+            $this->flash($key->data, $value, $hops);
         } else {
-            $_SESSION['flash'][$key] = $value;
+            $_SESSION['flash'][$key]['data'] = $value;
+            $_SESSION['flash'][$key]['hops'] = $hops;
         }
     }
 
     /**
      * Show a toast notification from session.
-     * @param string $type Notification type (one of: `success`, `info`, `error`).
+     * @param int|string|NotificationType $type Notification type.
      * @param string $text Notification text.
+     * @param int|null $timeout Notification timeout in web (or `null` if default timeout of 3500ms).
+     * @param int|null $eventId Corresponding event ID (if any).
      * @return void
      */
-    protected function toast(string $type, string $text): void {
-        if (!isset($_SESSION['flash']['toast'][$type]))
-            $_SESSION['flash']['toast'][$type] = [];
-        $_SESSION['flash']['toast'][$type][] = $text;
+    protected function toast(int|string|NotificationType $type, string $text, int|null $timeout = null, int|null $eventId = null): void {
+        $this->notificationService->createToastNotification($type, $text, $timeout, $eventId);
+    }
+
+    /**
+     * Show a success toast notification from session.
+     * @param string $text Notification text.
+     * @param int|null $timeout Notification timeout in web (or `null` if default timeout of 3500ms).
+     * @param int|null $eventId Corresponding event ID (if any).
+     * @return void
+     */
+    protected function toastSuccess(string $text, int|null $timeout = null, int|null $eventId = null): void {
+        $this->notificationService->createToastNotification(NotificationType::SUCCESS, $text, $timeout, $eventId);
+    }
+
+    /**
+     * Show an error toast notification from session.
+     * @param string $text Notification text.
+     * @param int|null $timeout Notification timeout in web (or `null` if default timeout of 3500ms).
+     * @param int|null $eventId Corresponding event ID (if any).
+     * @return void
+     */
+    protected function toastError(string $text, int|null $timeout = null, int|null $eventId = null): void {
+        $this->notificationService->createToastNotification(NotificationType::ERROR, $text, $timeout, $eventId);
+    }
+
+    /**
+     * Show an info toast notification from session.
+     * @param string $text Notification text.
+     * @param int|null $timeout Notification timeout in web (or `null` if default timeout of 3500ms).
+     * @param int|null $eventId Corresponding event ID (if any).
+     * @return void
+     */
+    protected function toastInfo(string $text, int|null $timeout = null, int|null $eventId = null): void {
+        $this->notificationService->createToastNotification(NotificationType::INFO, $text, $timeout, $eventId);
     }
 
     /**
@@ -79,11 +123,12 @@ abstract class Controller {
 
     /**
      * Redirect to a given URL.
-     * @param string $url
+     * @param string $urlOrRoute Route to redirect to.
+     * @param mixed $parameters Route parameters (for example, `.../{id}`).
      * @return void
      */
-    #[NoReturn] protected function redirect(string $url): void {
-        $url = Router::route($url);
+    #[NoReturn] protected function redirect(string $urlOrRoute, mixed $parameters = null): void {
+        $url = Router::route($urlOrRoute, $parameters);
         header("Location: $url");
         exit;
     }

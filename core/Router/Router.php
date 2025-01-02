@@ -196,7 +196,15 @@ class Router {
             $data = $_GET;
         }
 
-        unset($_SESSION['flash']);
+        if (isset($_SESSION['flash'])) {
+            $persistedFlash = [];
+            foreach ($_SESSION['flash'] as $key => $value) {
+                $hops = $value['hops'] ?? 0;
+                if ($hops > 0) $persistedFlash[$key] = ['data' => $value['data'] ?? null, 'hops' => $hops - 1];
+            }
+            $_SESSION['flash'] = $persistedFlash;
+        }
+
         resolve(Request::class, new Request($route, $method, $data));
 
         if (config('ENVIRONMENT') === 'production') {

@@ -600,6 +600,24 @@ input[name="csrf"] {
     background-color: #111111;
 }
 
+.event-actions .btn-join {
+    background-color: #015551;
+    color: #FFFFFF;
+}
+
+.event-actions .btn-join:hover {
+    background-color: #013f3b;
+}
+
+.event-actions .btn-leave {
+    background-color: #B03030;
+    color: #FFFFFF;
+}
+
+.event-actions .btn-leave:hover {
+    background-color: #8B0000;
+}
+
 @media screen and (max-width: 1024px) {
     .events-container {
         flex-direction: column;
