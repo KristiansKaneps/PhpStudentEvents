@@ -48,14 +48,17 @@ use Services\Auth;
                         </form>
                         <?php endif; ?>
                         <?php if (userId() !== $eventData['user_id'] && !$eventData['cancelled']): ?>
-                        <form method="POST" action="<?= route('event.participant.add', $eventData['id']) ?>">
-                            <input type="hidden" name="csrf" value="<?= csrf() ?>">
-                            <button type="submit" class="btn btn-join"><?= t('form.btn.join_event') ?></button>
-                        </form>
+                        <?php if ($eventData['participates']): ?>
                         <form method="POST" action="<?= route('event.participant.remove', $eventData['id']) ?>">
                             <input type="hidden" name="csrf" value="<?= csrf() ?>">
                             <button type="submit" class="btn btn-leave"><?= t('form.btn.leave_event') ?></button>
                         </form>
+                        <?php else: ?>
+                        <form method="POST" action="<?= route('event.participant.add', $eventData['id']) ?>">
+                            <input type="hidden" name="csrf" value="<?= csrf() ?>">
+                            <button type="submit" class="btn btn-join"><?= t('form.btn.join_event') ?></button>
+                        </form>
+                        <?php endif; ?>
                         <?php endif; ?>
                     </div>
                 </li>

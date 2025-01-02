@@ -2,6 +2,8 @@
 
 namespace Localization;
 
+use Services\Auth;
+
 class Localization {
     private static array $locales = array();
     private static ?string $currentLocale = null;
@@ -25,13 +27,46 @@ class Localization {
         return self::$locales;
     }
 
-    public static function setCurrentLocale(?string $locale): void {
+    public static function getDefaultLocale(): string {
+        return self::$locales[0];
+    }
+
+    public static function localeExists(string $locale): bool {
+        return in_array($locale, self::$locales, true);
+    }
+
+    /**
+     * Determines the appropriate locale automatically from session or user.
+     * @param string|null $requiredLocale Locale override (must be `null` for automatic locale detection).
+     * @return string Detected locale.
+     */
+    public static function detectUserLocale(?string $requiredLocale = null): string {
+        if (empty($requiredLocale)) {
+            $requiredLocale = resolve(Auth::class)->getUserLocale();
+            if (!empty($requiredLocale) && self::localeExists($requiredLocale)) {
+                return $requiredLocale;
+            }
+            if (isset($_SESSION['locale']) && self::localeExists($_SESSION['locale'])) {
+                return $_SESSION['locale'];
+            }
+            return self::getDefaultLocale();
+        }
+        return self::localeExists($requiredLocale) ? $requiredLocale : self::getDefaultLocale();
+    }
+
+    /**
+     * Sets the current locale for system.
+     * @param string|null $locale Locale to set (or `null` to determine locale automatically from session or user).
+     * @return void
+     */
+    public static function setCurrentLocale(?string $locale = null): void {
         global $localizedMessages;
-        $locale = $locale ?? (isset($_SESSION['locale']) && in_array($_SESSION['locale'], self::$locales, true) ? $_SESSION['locale'] : self::$locales[0]);
+        $locale = self::detectUserLocale($locale);
         if (self::$currentLocale === null) {
             require_once(ROOT_DIR . 'localization' . DIRECTORY_SEPARATOR . $locale . DIRECTORY_SEPARATOR . 'messages.php');
             self::$currentLocale = $locale;
             $_SESSION['locale'] = $locale;
+            resolve(Auth::class)->setUserLocale($locale);
             return;
         }
         if (self::$currentLocale != $locale) {
@@ -39,6 +74,7 @@ class Localization {
             require_once(ROOT_DIR . 'localization' . DIRECTORY_SEPARATOR . $locale . DIRECTORY_SEPARATOR . 'messages.php');
             self::$currentLocale = $locale;
             $_SESSION['locale'] = $locale;
+            resolve(Auth::class)->setUserLocale($locale);
         }
     }
 
@@ -46,8 +82,22 @@ class Localization {
         return self::$currentLocale;
     }
 
-    public static function translate(string $messageKey, ?array $parameters = null): string {
+    /**
+     * Localize a message.
+     * @param string $messageKey Message key.
+     * @param array|null $parameters Message parameters for interpolation.
+     * @param string|null $locale Locale to use for localizing this message (or `null` if using currently set locale).
+     * @return string
+     */
+    public static function translate(string $messageKey, ?array $parameters = null, ?string $locale = null): string {
         global $localizedMessages;
+
+        if ($locale !== null) {
+            // Switch locale to the given locale temporarily.
+            $prevLocale = self::getCurrentLocale();
+            self::setCurrentLocale($locale);
+        }
+
         $message = $localizedMessages;
         $arrayKey = strtok($messageKey, '.');
         while ($arrayKey !== false) {
@@ -61,6 +111,10 @@ class Localization {
             foreach ($parameters as $key => $value) {
                 $message = str_replace(':' . $key, $value ?? '', $message);
             }
+        }
+
+        if (isset($prevLocale)) {
+            self::setCurrentLocale($prevLocale);
         }
 
         return $message;

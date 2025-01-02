@@ -342,12 +342,16 @@ input[name="csrf"] {
     color: #ffffff;
     opacity: 0;
     transform: translateY(100%);
-    animation: toast-slide-in-out 3.5s forwards;
+    animation: toast-slide-in 0.35s forwards;
     display: flex;
     align-items: center;
     gap: 10px;
     background: linear-gradient(135deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
     user-select: none;
+}
+
+.toast-hide {
+    animation: toast-slide-out 0.35s forwards;
 }
 
 .toast.info {
@@ -379,12 +383,19 @@ input[name="csrf"] {
     padding-left: 1px;
 }
 
-@keyframes toast-slide-in-out {
+@keyframes toast-slide-in {
     0% {
         opacity: 0;
         transform: translateY(100%);
     }
-    10%, 90% {
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes toast-slide-out {
+    0% {
         opacity: 1;
         transform: translateY(0);
     }
@@ -393,6 +404,7 @@ input[name="csrf"] {
         transform: translateY(-50%);
     }
 }
+
 
 /* Event List & Create New Event */
 .events-container {

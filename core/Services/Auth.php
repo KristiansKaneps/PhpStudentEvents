@@ -19,7 +19,7 @@ class Auth extends Service {
     private function findUserBy(string $sqlWhereClause, array $params): ?array {
         try {
             $result = $this->db->query(<<<SQL
-                SELECT id, name, surname, email, phone, role, student_id, created_at, updated_at FROM users
+                SELECT id, name, surname, email, phone, role, student_id, locale, created_at, updated_at FROM users
                 WHERE $sqlWhereClause
                 LIMIT 1
             SQL, $params);
@@ -33,6 +33,20 @@ class Auth extends Service {
         $this->user = empty($sessionId)
             ? null
             : $this->findUserBy('users.id = (SELECT user_id FROM sessions WHERE sessions.id = ?)', [$sessionId]);
+    }
+
+    public function getUserLocale(?int $userId = null): string|null {
+        $user = $this->getUser($userId);
+        if (empty($user)) return null;
+        return $user['locale'];
+    }
+
+    public function setUserLocale(string $locale, ?int $userId = null): void {
+        try {
+            $userId = $userId === null ? $this->getUserId() : $userId;
+            if ($userId === null) return;
+            $this->db->execute('UPDATE users SET locale = ? WHERE id = ?', [$locale, $userId]);
+        } catch (DatabaseException) { }
     }
 
     public function isAuthenticated(): bool {
@@ -115,14 +129,17 @@ class Auth extends Service {
      */
     public function authenticateByEmail(string $email, #[\SensitiveParameter] string $password): int {
         try {
-            $query = "SELECT id, name, surname, email, role, password FROM users WHERE email = :email";
+            $query = <<<SQL
+                SELECT id, name, surname, email, phone, role, student_id, locale, created_at, updated_at, password
+                FROM users WHERE email = :email
+            SQL;
             $user = $this->db->query($query, ['email' => $email]);
             if (empty($user)) return self::LOGIN_RESULT_INVALID_USER;
             $user = $user[0]; // Since executeQuery returns an array of rows
             if (!password_verify($password, $user['password'])) {
                 return self::LOGIN_RESULT_INVALID_PASSWORD;
             }
-            unset($user['password']); // Unset password hash for safety
+            unset($user['password']); // Unset password hash from user data for safety
             $sessionId = session_id();
             if (!empty($sessionId)) {
                 $this->db->query('UPDATE sessions SET user_id = ? WHERE id = ?', [$user['id'], $sessionId]);

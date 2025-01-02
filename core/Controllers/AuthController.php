@@ -3,6 +3,7 @@
 namespace Controllers;
 
 use JetBrains\PhpStorm\NoReturn;
+use Localization\Localization;
 use Router\Request;
 use Services\Auth;
 use Validation\Pattern;
@@ -35,7 +36,8 @@ class AuthController extends Controller {
 
             switch ($status) {
                 case Auth::LOGIN_RESULT_SUCCESS:
-                    $this->toastSuccess(t('toast.success.login'));
+                    Localization::setCurrentLocale();
+                    $this->toastSuccess(t('toast.success.login'), 1500);
                     $this->redirect('home');
                 case Auth::LOGIN_RESULT_INVALID_PASSWORD:
                     $this->flash('error_password', t('validation.auth.login.invalid_password'));
@@ -95,7 +97,7 @@ class AuthController extends Controller {
 
             switch ($status) {
                 case Auth::REGISTER_RESULT_SUCCESS:
-                    $this->toastSuccess(t('toast.success.registered'));
+                    $this->toastSuccess(t('toast.success.registered'), 1500);
                     $this->redirect('home');
                 case Auth::REGISTER_RESULT_EXCEPTION:
                     $this->toastError(t('toast.error.registered'));
@@ -117,7 +119,7 @@ class AuthController extends Controller {
 
     #[NoReturn] public function logout(Auth $auth): void {
         $auth->logout();
-        $this->toastInfo(t('toast.info.logout'));
+        $this->toastInfo(t('toast.info.logout'), 1500);
         $this->redirect(route('login'));
     }
 }

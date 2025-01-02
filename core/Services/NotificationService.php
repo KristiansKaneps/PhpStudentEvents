@@ -49,7 +49,7 @@ class NotificationService extends Service {
                 $notifications = $this->db->query(<<<SQL
                 SELECT * FROM notifications
                 WHERE status = ? AND (user_id = ? OR session_id = ?) AND priority = ?
-                ORDER BY created_at, type, type_counter
+                ORDER BY timeout DESC, created_at, type, type_counter
                 SQL,
                     [self::STATUS_SENT, $userId, session_id(), NotificationPriority::NONE->value],
                 );

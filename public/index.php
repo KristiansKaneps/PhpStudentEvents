@@ -6,9 +6,9 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'confi
 $production = config('ENVIRONMENT') !== 'development' && config('ENVIRONMENT') !== 'local';
 
 if ($production) {
-    ini_set("display_errors", 'Off');
-    ini_set("log_errors", 'On');
-    ini_set("error_log", "syslog");
+    ini_set('display_errors', 'Off');
+    ini_set('log_errors', 'On');
+    ini_set('error_log', 'syslog');
 }
 
 try {

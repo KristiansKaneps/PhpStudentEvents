@@ -144,8 +144,8 @@ $localizedMessages = [
         'info' => [
             'logout' => 'You have logged out.',
             'no_profile_changes' => 'No changes in profile data.',
-            'event_participant_left' => 'A participant left the event ":name". Current participant count: :current_participant_count.',
-            'event_participant_joined' => 'A participant joined the event ":name". Current participant count: :current_participant_count.',
+            'event_participant_left' => 'Participant ":user_name" left the event ":event_name". Current participant count: :current_participant_count.',
+            'event_participant_joined' => 'Participant ":user_name" joined the event ":event_name". Current participant count: :current_participant_count.',
             'event_participant_cancelled' => 'The event ":name" was cancelled.',
         ],
         'error' => [

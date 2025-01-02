@@ -59,7 +59,13 @@ use Types\NotificationType;
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const toasts = document.querySelectorAll('.toast');
-        toasts.forEach((toast) => setTimeout(toast.remove, toast.hasAttribute('data-timeout') ? Number(toast.getAttribute('data-timeout')) : 3500));
+        toasts.forEach((toast) => {
+            const duration = toast.hasAttribute('data-timeout') ? Number(toast.getAttribute('data-timeout')) : 3500;
+            setTimeout(() => {
+                toast.className += ' toast-hide';
+                setTimeout(() => toast.remove(), 350);
+            }, duration + 350);
+        });
     });
 </script>
 </body>

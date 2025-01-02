@@ -8,13 +8,16 @@ class EventService extends Service {
         if ($useCached && isset($cachedEvents[$id])) return $cachedEvents[$id];
         $deletedAtQuery = $includeDeleted ? '' : 'AND deleted_at IS NULL';
         try {
+            $auth = resolve(Auth::class);
+            $userId = $auth->getUserId();
             $event = $this->db->query(<<<SQL
-                SELECT e.*, ec.name AS category_name
+                SELECT e.*, ec.name AS category_name, (ep.event_id IS NOT NULL) AS participates
                 FROM events e
                 JOIN event_categories ec ON e.category_id = ec.id
+                LEFT JOIN event_participants ep ON e.id = ep.event_id AND ep.user_id = :user_id
                 WHERE e.id = :id $deletedAtQuery
                 SQL,
-                ['id' => $id],
+                ['id' => $id, 'user_id' => $userId],
             );
             $event = empty($event) ? null : $event[0];
             $cachedEvents[$id] = $event;
@@ -39,16 +42,18 @@ class EventService extends Service {
             $userId = $auth->getUserId();
             $cancelledQuery = $auth->hasAdminRole() ? '' : 'AND (e.user_id = :user_id OR e.cancelled = false)';
             return $this->db->query(<<<SQL
-                SELECT e.*, ec.name AS category_name
+                SELECT e.*, ec.name AS category_name, (ep.event_id IS NOT NULL) AS participates
                 FROM events e
                 JOIN event_categories ec ON e.category_id = ec.id
+                LEFT JOIN event_participants ep ON e.id = ep.event_id AND ep.user_id = :user_id
                 WHERE e.start_date >= NOW() $cancelledQuery
                     AND e.deleted_at IS NULL
                 ORDER BY e.start_date ASC, e.end_date DESC
                 SQL,
-                empty($cancelledQuery) ? [] : ['user_id' => $userId],
+                ['user_id' => $userId],
             );
-        } catch (\Exception) { }
+        } catch (\Exception) {
+        }
         return [];
     }
 
@@ -56,9 +61,10 @@ class EventService extends Service {
         try {
             $userId = resolve(Auth::class)->getUserId();
             return $this->db->query(<<<SQL
-                SELECT e.*, ec.name AS category_name
+                SELECT e.*, ec.name AS category_name, (ep.event_id IS NOT NULL) AS participates
                 FROM events e
                 JOIN event_categories ec ON e.category_id = ec.id
+                LEFT JOIN event_participants ep ON e.id = ep.event_id AND ep.user_id = :user_id
                 WHERE e.cancelled = false AND (e.user_id = :user_id OR e.cancelled = false)
                     AND e.deleted_at IS NULL
                 ORDER BY e.current_participant_count DESC, e.start_date
@@ -66,6 +72,23 @@ class EventService extends Service {
                 SQL,
                 ['user_id' => $userId],
             );
+        } catch (\Exception) { }
+        return [];
+    }
+
+    public function getParticipatedEventIds(?int $userId = null): array {
+        try {
+            $auth = resolve(Auth::class);
+            $userId = $auth->getUser($userId);
+            $eventParticipants = $this->db->query(<<<SQL
+                SELECT event_id FROM event_participants
+                WHERE user_id = ?
+                SQL,
+                ['user_id' => $userId],
+            );
+            return array_map(function ($record) {
+                return $record['event_id'];
+            }, $eventParticipants);
         } catch (\Exception) { }
         return [];
     }
@@ -141,7 +164,7 @@ class EventService extends Service {
             $maxParticipantCount = $event['max_participant_count'];
             $currentParticipantCount = $event['current_participant_count'];
 
-            if ($currentParticipantCount >= $maxParticipantCount)
+            if ($maxParticipantCount !== 0 && $currentParticipantCount >= $maxParticipantCount)
                 return self::ADD_PARTICIPANT_RESULT_MAX_PARTICIPANTS_REACHED;
 
             $this->db->beginTransaction();

@@ -9,18 +9,18 @@ function locale(): string {
     return Localization::getCurrentLocale();
 }
 
-function translate($messageKey, ?array $parameters = null): string {
-    return Localization::translate($messageKey, $parameters);
+function translate($messageKey, ?array $parameters = null, ?string $locale = null): string {
+    return Localization::translate($messageKey, $parameters, $locale);
 }
 
-function trans($messageKey, ?array $parameters = null): string {
-    return Localization::translate($messageKey, $parameters);
+function trans($messageKey, ?array $parameters = null, ?string $locale = null): string {
+    return Localization::translate($messageKey, $parameters, $locale);
 }
 
-function t($messageKey, ?array $parameters = null): string {
-    return Localization::translate($messageKey, $parameters);
+function t($messageKey, ?array $parameters = null, ?string $locale = null): string {
+    return Localization::translate($messageKey, $parameters, $locale);
 }
 
-function __($messageKey, ?array $parameters = null): string {
-    return Localization::translate($messageKey, $parameters);
+function __($messageKey, ?array $parameters = null, ?string $locale = null): string {
+    return Localization::translate($messageKey, $parameters, $locale);
 }

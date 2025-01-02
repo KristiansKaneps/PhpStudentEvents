@@ -3,6 +3,7 @@
 namespace Controllers;
 
 use JetBrains\PhpStorm\NoReturn;
+use Localization\Localization;
 use Router\Request;
 use Services\Auth;
 use Services\EventService;
@@ -80,10 +81,11 @@ class EventController extends Controller {
         $this->redirect('event.list');
     }
 
-    private function notifyEventCancellation(NotificationService $notificationService, array $event, array $participants): void {
+    private function notifyEventCancellation(Auth $auth, NotificationService $notificationService, array $event, array $participants): void {
         foreach ($participants as $participant) {
             $userId = $participant['user_id'];
-            $notificationService->createToastNotification(NotificationType::INFO, t('toast.info.event_participant_cancelled', $event), 10000, null, $userId);
+            $participantLocale = $auth->getUserLocale($userId) ?? Localization::getDefaultLocale();
+            $notificationService->createToastNotification(NotificationType::INFO, t('toast.info.event_participant_cancelled', $event, $participantLocale), 10000, null, $userId);
         }
     }
 
@@ -105,7 +107,7 @@ class EventController extends Controller {
         $result = $eventService->cancelEvent($id); // `null` means that it did nothing (no message should be displayed)
         if ($result === true) {
             $participants = $eventService->getParticipants($event['id']);
-            $this->notifyEventCancellation($notificationService, $event, $participants);
+            $this->notifyEventCancellation($auth, $notificationService, $event, $participants);
             $this->toastSuccess(t('toast.success.event_cancelled', ['name' => $event['name']]));
         } else if ($result === false) {
             $this->toastError(t('toast.error.event_cancelled', ['name' => $event['name']]));
@@ -132,7 +134,7 @@ class EventController extends Controller {
         $result = $eventService->deleteEvent($id); // `null` means that it did nothing (no message should be displayed)
         if ($result === true) {
             $participants = $eventService->getParticipants($event['id']);
-            $this->notifyEventCancellation($notificationService, $event, $participants);
+            $this->notifyEventCancellation($auth, $notificationService, $event, $participants);
             $this->toastSuccess(t('toast.success.event_deleted', ['name' => $event['name']]));
         } else if ($result === false) {
             $this->toastError(t('toast.error.event_deleted', ['name' => $event['name']]));
@@ -155,12 +157,14 @@ class EventController extends Controller {
         $result = $eventService->addParticipant($id, $auth->getUserId());
 
         $event = $eventService->find($id);
+        $user = $auth->getUser($userId);
 
         switch ($result) {
             case EventService::ADD_PARTICIPANT_RESULT_SUCCESS:
                 $event['current_participant_count']++;
                 $this->toastSuccess(t('toast.success.participation_created', ['name' => $event['name']]));
-                $notificationService->createToastNotification(NotificationType::INFO, t('toast.info.event_participant_joined', $event), 10000, $event['id'], $event['user_id']);
+                $organizerLocale = $auth->getUserLocale($event['user_id']) ?? Localization::getDefaultLocale();
+                $notificationService->createToastNotification(NotificationType::INFO, t('toast.info.event_participant_joined', ['user_name' => $user['name'] . ' ' . $user['surname'], 'event_name' => $event['name'], 'current_participant_count' => $event['current_participant_count']], $organizerLocale), 10000, $event['id'], $event['user_id']);
                 break;
             case EventService::ADD_PARTICIPANT_RESULT_ALREADY_PARTICIPATES:
                 $this->toastError(t('toast.error.participation_created', ['name' => $event['name']]));
@@ -195,12 +199,14 @@ class EventController extends Controller {
         $result = $eventService->removeParticipant($id, $auth->getUserId());
 
         $event = $eventService->find($id);
+        $user = $auth->getUser($userId);
 
         switch ($result) {
             case EventService::REMOVE_PARTICIPANT_RESULT_SUCCESS:
                 $event['current_participant_count']--;
                 $this->toastSuccess(t('toast.success.participation_removed', ['name' => $event['name']]));
-                $notificationService->createToastNotification(NotificationType::INFO, t('toast.info.event_participant_left', $event), 10000, $event['id'], $event['user_id']);
+                $organizerLocale = $auth->getUserLocale($event['user_id']) ?? Localization::getDefaultLocale();
+                $notificationService->createToastNotification(NotificationType::INFO, t('toast.info.event_participant_left', ['user_name' => $user['name'] . ' ' . $user['surname'], 'event_name' => $event['name'], 'current_participant_count' => $event['current_participant_count']], $organizerLocale), 10000, $event['id'], $event['user_id']);
                 break;
             case EventService::REMOVE_PARTICIPANT_RESULT_IS_NOT_PARTICIPANT:
                 $this->toastError(t('toast.error.participation_removed', ['name' => $event['name']]));

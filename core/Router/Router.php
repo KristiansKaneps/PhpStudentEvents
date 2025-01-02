@@ -90,9 +90,8 @@ class Router {
                 break;
             }
         }
-        if ($acceptedLocale === null && isset($_SESSION['locale'])){
-            if (in_array($_SESSION['locale'], $locales, true))
-                $acceptedLocale = $_SESSION['locale'];
+        if ($acceptedLocale === null) {
+            $acceptedLocale = Localization::detectUserLocale();
         }
         if ($acceptedLocale === null) {
             $languages = array();

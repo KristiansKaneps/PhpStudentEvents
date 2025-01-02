@@ -8,6 +8,7 @@ create table users
     phone      varchar(23)      null,
     role       tinyint unsigned not null default 0, -- 0 - user; 1 - organizer; 2 - admin
     password   varchar(255)     not null,
+    locale     varchar(5)       null,
     created_at datetime         not null default now(),
     updated_at datetime         not null default now()
 );

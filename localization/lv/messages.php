@@ -144,8 +144,8 @@ $localizedMessages = [
         'info' => [
             'logout' => 'Jūs esat atteicies sistēmā.',
             'no_profile_changes' => 'Nav izmaiņu profila datos.',
-            'event_participant_left' => 'Dalībnieks atstāja notikumu ":name". Pašreizējais dalībnieku skaits: :current_participant_count.',
-            'event_participant_joined' => 'Dalībnieks pievienojās pasākumam ":name". Pašreizējais dalībnieku skaits: :current_participant_count.',
+            'event_participant_left' => 'Dalībnieks ":user_name" atstāja notikumu ":event_name". Pašreizējais dalībnieku skaits: :current_participant_count.',
+            'event_participant_joined' => 'Dalībnieks ":user_name" pievienojās pasākumam ":event_name". Pašreizējais dalībnieku skaits: :current_participant_count.',
             'event_participant_cancelled' => 'Pasākums ":name" tika atcelts.',
         ],
         'error' => [
