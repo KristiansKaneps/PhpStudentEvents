@@ -10,12 +10,6 @@ Studentu pasākumu pārvaldības sistēma ir izstrādāta, lai atvieglotu studen
 reģistrēties un piedalīties universitātes pasākumos. Projekts ir veidots, iedvesmojoties no Laravel ietvara, un izmanto
 MVC (Model-View-Controller) arhitektūru, kas nodrošina koda modularitāti un vieglu uzturēšanu.
 
-### Sistēmas galvenās funkcionalitātes:
-
-- [ ] Lietotāju autentifikācija un tiesību pārvaldība (dalībnieki, organizatori, administratori).
-- [ ] Pasākumu izveide, rediģēšana, atcelšana un dalībnieku pārvaldība.
-- [ ] Dalība pasākumos un paziņojumi par izmaiņām.
-
 ---
 
 ## Sistēmas uzstādīšana ar Docker virtualizāciju
