@@ -255,6 +255,18 @@ Detalizētāk:
 
 ---
 
+## Demo
+
+Ir uzstādīta demo lapa (2025. gada 4. janv.): https://studentevents.kristianskaneps.lv/
+
+Admin konts:
+```dotenv
+E-pasts: admin@studentevents.lv
+Parole:  password
+```
+
+---
+
 ## Autori
 
 - [Kristiāns Kaņeps](https://github.com/KristiansKaneps)
