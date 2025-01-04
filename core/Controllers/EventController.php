@@ -90,6 +90,10 @@ class EventController extends Controller {
     }
 
     #[NoReturn] public function listCancel(Auth $auth, EventService $eventService, NotificationService $notificationService, int $id): void {
+        if (!$auth->isAuthenticated()) {
+            $this->redirect('login');
+        }
+
         if (!$auth->hasOrganizerRole()) {
             $this->unauthorized();
         }
@@ -117,6 +121,10 @@ class EventController extends Controller {
     }
 
     #[NoReturn] public function listDelete(Auth $auth, EventService $eventService, NotificationService $notificationService, int $id): void {
+        if (!$auth->isAuthenticated()) {
+            $this->redirect('login');
+        }
+
         if (!$auth->hasOrganizerRole()) {
             $this->unauthorized();
         }
@@ -144,6 +152,10 @@ class EventController extends Controller {
     }
 
     #[NoReturn] public function listAddParticipant(Auth $auth, EventService $eventService, NotificationService $notificationService, int $id, ?int $userId = null): void {
+        if (!$auth->isAuthenticated()) {
+            $this->redirect('login');
+        }
+
         if (!$auth->hasUserRole()) {
             $this->unauthorized();
         }
@@ -186,6 +198,10 @@ class EventController extends Controller {
     }
 
     #[NoReturn] public function listRemoveParticipant(Auth $auth, EventService $eventService, NotificationService $notificationService, int $id, ?int $userId = null): void {
+        if (!$auth->isAuthenticated()) {
+            $this->redirect('login');
+        }
+
         if (!$auth->hasUserRole()) {
             $this->unauthorized();
         }
