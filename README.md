@@ -72,11 +72,15 @@ DATABASE_PASSWORD=root
 
 ### 4. Datubāzes migrācijas
 
-Lai sagatavotu datubāzi, nepieciešams palaist migrācijas ar sekojošo komandu:
+Lai sagatavotu datubāzi, nepieciešams palaist migrācijas ar sekojošu komandu:
 
 ```bash
-php console migrate
+docker compose exec app php console migrate
 ```
+
+> Migrācijas var arī palaist ar divām atsevišķām komandām:
+> 1. Jāpieslēdzas Docker "app" konteinerim: `docker compose exec -it app bash`
+> 2. Jāpalaiž datubāzes migrācijas: `php console migrate`
 
 ### 5. Piekļuve sistēmai
 
@@ -234,10 +238,10 @@ Detalizētāk:
   ```
   Šie maršruti ir definēti failā [`/routes/web.php`](routes/web.php).
 - [`Helper/`](core/Helper): palīgfunkcijas/palīgmetodes, kas ļauj:
-  - iztulkot statiskus tekstus lietotāja izvēlētajā valodā;
-  - vieglāk iegūt sistēmā definētos maršrutus, kad tiek veidoti skati;
-  - u.c.
-  
+    - iztulkot statiskus tekstus lietotāja izvēlētajā valodā;
+    - vieglāk iegūt sistēmā definētos maršrutus, kad tiek veidoti skati;
+    - u.c.
+
   Piemēram, HTML kods:
   ```html
   <a href="/events">Pasākumi</a>
@@ -251,6 +255,7 @@ Detalizētāk:
 ---
 
 ## Potenciālās nākotnes optimizācijas
+
 - [ ] Maršrutu kešošana.
 
 ---
@@ -260,6 +265,7 @@ Detalizētāk:
 Ir uzstādīta demo lapa (2025. gada 4. janv.): https://studentevents.kristianskaneps.lv/
 
 Admin konts:
+
 ```dotenv
 E-pasts: admin@studentevents.lv
 Parole:  password
