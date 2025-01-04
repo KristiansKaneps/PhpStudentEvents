@@ -37,7 +37,7 @@ create table events
     user_id                   bigint       not null references users (id) on update cascade,
     category_id               bigint       not null references event_categories (id) on update cascade,
     name                      varchar(127) not null,
-    description               text         not null default '',
+    description               text         not null default (''),
     max_participant_count     int unsigned not null default 0, -- 0 - no limit
     current_participant_count int unsigned not null default 0,
     start_date                datetime     not null,
@@ -57,7 +57,7 @@ create table notifications
     type         tinyint unsigned  not null,
     type_counter smallint unsigned not null default 0,
     message      varchar(255)      not null,
-    description  text              not null default '',
+    description  text              not null default (''),
     timeout      int unsigned      not null default 3500,
     priority     tinyint unsigned  not null default 0,
     status       tinyint unsigned  not null default 0, -- 0 - not sent; 1 - sent; 255 - to delete
