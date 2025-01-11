@@ -34,8 +34,8 @@ MVC (Model-View-Controller) arhitektūru, kas nodrošina koda modularitāti un v
 ### 1. Repozitorija klonēšana
 
 ```bash
-git clone https://github.com/KristiansKaneps/RTUStudentEvents.git
-cd RTUStudentEvents
+git clone https://github.com/KristiansKaneps/PhpStudentEvents.git
+cd PhpStudentEvents
 ```
 
 ### 2. Docker konteinera palaišana
